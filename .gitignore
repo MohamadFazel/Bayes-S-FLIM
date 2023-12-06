@@ -1,0 +1,4 @@
+# ignore ALL .log files
+*.log
+
+.ipynb_checkpoints
