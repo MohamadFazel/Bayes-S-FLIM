@@ -82,7 +82,7 @@ def run_sflim_sampler(dt, lambda_, t_interp, tau_irf, sig_irf, t_inter_p, n_iter
         # # eta[jj, :], accept_eta = sample_lifetime(photon_int[jj - 1, :, :], eta[jj-1,:], tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num, accept_eta)
         if jj<(numerator+1):
             pi[0, :, :], accept_pi = sample_photon_probability(lambda_, pi[0, :, :], photon_int[0, :, :], accept_pi)
-            photon_int[0, :, :], accept_i = sample_int(lambda_, pi[0, :, :], photon_int[0, :, :], pi_bg[jj-1], npix, eta[0,:], tau_irf, sig_irf, dt_padded, tiled_mask, t_inter_p, num, accept_i)
+            photon_int[0, :, :], accept_i = sample_int(lambda_, pi[0, :, :], photon_int[0, :, :], pi_bg[0], npix, eta[0,:], tau_irf, sig_irf, dt_padded, tiled_mask, t_inter_p, num, accept_i)
             eta[0, :], accept_eta = sample_lifetime(photon_int[0, :, :], eta[0,:], pi_bg[0], tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num, accept_eta)
             pi_bg[0], accept_bg = sample_bg(pi_bg[0], photon_int[0, :, :], eta[0,:], tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num, accept_bg)
 
