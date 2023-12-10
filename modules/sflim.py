@@ -74,7 +74,12 @@ def run_sflim_sampler(dt, lambda_, t_interp, tau_irf, sig_irf, t_inter_p, n_iter
             print('Pi acceptance ratio:', 100 * accept_pi / jj)
             print('I acceptance ratio:', 100 * accept_i / jj)
             print('Eta acceptance ratio:', 100 * accept_eta / jj)
+            # print('background acceptance ratio:', 100 * accept_bg/jj)
+            if jj<(numerator+1):
+                print(f"Eta: {1/eta[0]}\n background: {pi_bg[0]} \n")
 
+            else:
+                print(f"Eta: {1/eta[jj-numerator-1]}\n background: {pi_bg[jj-numerator-1]} \n")
 
         # # print(eta[jj-1])
         # # pi[jj, :, :], accept_pi = sample_photon_probability(lambda_, pi[jj - 1, :, :], photon_int[jj - 1, :, :], accept_pi)
@@ -88,9 +93,9 @@ def run_sflim_sampler(dt, lambda_, t_interp, tau_irf, sig_irf, t_inter_p, n_iter
 
         else:
             pi[jj-numerator, :, :], accept_pi = sample_photon_probability(lambda_, pi[jj-numerator-1, :, :], photon_int[jj-numerator-1, :, :], accept_pi)
-            photon_int[jj-numerator, :, :], accept_i = sample_int(lambda_, pi[jj-numerator-1, :, :], photon_int[jj-numerator-1, :, :], pi_bg[jj-1], npix, eta[jj-numerator-1,:], tau_irf, sig_irf, dt_padded, tiled_mask, t_inter_p, num, accept_i)
-            eta[jj-numerator, :], accept_eta = sample_lifetime(photon_int[jj-numerator-1, :, :], eta[jj-numerator-1,:], pi_bg[jj-1], tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num, accept_eta)
-            pi_bg[jj], accept_bg = sample_bg(pi_bg[jj-numerator-1], photon_int[jj-numerator-1, :, :], eta[jj-numerator-1,:], tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num, accept_bg)
+            photon_int[jj-numerator, :, :], accept_i = sample_int(lambda_, pi[jj-numerator-1, :, :], photon_int[jj-numerator-1, :, :], pi_bg[jj-numerator-1], npix, eta[jj-numerator-1,:], tau_irf, sig_irf, dt_padded, tiled_mask, t_inter_p, num, accept_i)
+            eta[jj-numerator, :], accept_eta = sample_lifetime(photon_int[jj-numerator-1, :, :], eta[jj-numerator-1,:], pi_bg[jj-numerator-1], tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num, accept_eta)
+            pi_bg[jj-numerator], accept_bg = sample_bg(pi_bg[jj-numerator-1], photon_int[jj-numerator-1, :, :], eta[jj-numerator-1,:], tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num, accept_bg)
 
     print('Pi acceptance ratio:', 100 * accept_pi / n_iter)
     print('I acceptance ratio:', 100 * accept_i / n_iter)

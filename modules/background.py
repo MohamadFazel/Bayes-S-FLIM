@@ -22,7 +22,7 @@ def sample_bg(pi_bg_old, photon_int, eta, tau_irf,  sig_irf, dt_padded, tiled_ma
     Returns:
         tuple: Tuple containing the updated eta array and the updated accept_eta value.
     '''
-    alpha_prop = 18000
+    alpha_prop = 10000
     pi_bg_prop = np.random.gamma(alpha_prop, pi_bg_old/alpha_prop)
 
     lf_top = calculate_lifetime_likelihood_gpu(cp.asarray(photon_int), cp.asarray(eta), pi_bg_prop, tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num)
