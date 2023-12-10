@@ -101,6 +101,6 @@ def run_sflim_sampler(dt, lambda_, t_interp, tau_irf, sig_irf, t_inter_p, n_iter
     print('I acceptance ratio:', 100 * accept_i / n_iter)
     print('Eta acceptance ratio:', 100 * accept_eta / n_iter)
 
-    return pi, photon_int, eta
+    return pi, photon_int, eta, bg
 
 
