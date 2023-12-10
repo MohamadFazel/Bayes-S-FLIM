@@ -32,7 +32,7 @@ num_species = 3
 NIter = 200000
 #Image size
 img_size = (128,128)
-#choose image peace you want to analyze
+#choose image piece you want to analyze
 slice_params = slice(54, 118, None), slice(0, 64, None)
 file_name = os.path.basename(file_path)
 name_without_extension = os.path.splitext(file_name)[0]
@@ -85,3 +85,5 @@ for it in range(num_species):
     plt.savefig(f"{save_path}/spectrum_{name_without_extension}_{it}.png")
 plt.plot(bg[-num_avg:])
 plt.savefig(f"{save_path}/bg_{name_without_extension}_{it}.png")
+
+################################################################
