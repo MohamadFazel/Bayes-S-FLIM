@@ -17,6 +17,7 @@ import matplotlib.pylab as plt
 # mi = sc.io.loadmat("New Folder/1-color MitoOrange.mat")
 # vi = sc.io.loadmat("New Folder/1-color Viafluor488.mat")
 mix = sc.io.loadmat("New Folder/3color_shiftedIRF_Data#1.mat")
+# mix = sc.io.loadmat("/home/reza/software/flim/New Folder/1color_MitoOrange_Lifetime_2point1ns_shiftedIRF_Offset_2point5_Sigma_point52_Bg_13percent.mat")
 
 # dt_l = np.squeeze( ly['Dt']).reshape(128,128)
 # dt_m = np.squeeze(mi["Dt"]).reshape(128,128)
@@ -25,7 +26,7 @@ dt_mix = np.squeeze(mix["Dt"]).reshape(128,128)
 # dt_l = dt_l[:64, :64]
 # dt_m = dt_m[64:, :64]
 # dt_v = dt_v[64:, :64]
-dt_mix = dt_mix[64:, :64]
+dt_mix = dt_mix[54:-10, :64]
 # dt_l = dt_l.reshape(-1)
 # dt_m = dt_m.reshape(-1)
 # dt_v = dt_v.reshape(-1)
@@ -86,16 +87,16 @@ lam_mix = lam_mix.reshape(-1, 128, lam_mix.shape[1])
 # lam_m = lam_m[64:, :64]
 # lam_v = lam_v[64:, :64]
 
-lam_mix = lam_mix[64:, :64]
+lam_mix = lam_mix[54:-10, :64]
 
 # lambda_ = lam_l + lam_m + lam_v
 lambda_ = lam_mix.reshape(-1, lam_mix.shape[2])
 
 TInterP = 12.85
-TauIRF = 6.54
-SigIRF = 0.62
+TauIRF = 2.506
+SigIRF = 0.51
 M = 3
-NIter = 300000
+NIter = 200000
 t0 = datetime.now()
 timestr = time.strftime("%m%d%H%M%S")
 
@@ -104,11 +105,5 @@ pi, photon_int, eta = run_sflim_sampler(dt, lambda_, TInterP, TauIRF, SigIRF, TI
 np.save(f"/mnt/44ec9f87-1051-4bdf-8f53-fcf9d10c68a5/SpectralFlim/NewResult/mix_Pi_{timestr}.npy", pi[-50000:])
 np.save(f"/mnt/44ec9f87-1051-4bdf-8f53-fcf9d10c68a5/SpectralFlim/NewResult/mix_Phot_{timestr}.npy", photon_int[-50000:])
 np.save(f"/mnt/44ec9f87-1051-4bdf-8f53-fcf9d10c68a5/SpectralFlim/NewResult/Mix_Eta_{timestr}.npy", eta[-50000:])
-
-# np.save(f"Results/LysotrackerRed.npy", l1)
-# np.save(f"Results/MitotrackerOrange.npy", l2)
-# np.save(f"Results/ViaFluor488.npy", l3)
-# np.save(f"Results/mix.npy", l)
-
 
 print(datetime.now()-t0)

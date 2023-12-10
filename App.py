@@ -12,7 +12,7 @@ from tkinter import filedialog
 class SpectralFittingApp:
     def __init__(self, master):
         self.master = master
-        self.master.title("Spectral FLIM App")
+        self.master.title("Spectral Fitting App")
 
         # Data variables
         self.dt_mix = None
@@ -48,7 +48,7 @@ class SpectralFittingApp:
         self.save_button = tk.Button(self.master, text="Select Save Folder", command=self.select_save_folder)
         self.save_button.pack()
 
-        self.run_button = tk.Button(self.master, text="Run Spectral FLIM", command=self.run_spectral_fitting)
+        self.run_button = tk.Button(self.master, text="Run Spectral Fitting", command=self.run_spectral_fitting)
         self.run_button.pack()
 
         self.quit_button = tk.Button(self.master, text="Quit", command=self.master.quit)
