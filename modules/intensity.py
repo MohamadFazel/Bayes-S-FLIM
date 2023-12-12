@@ -15,8 +15,8 @@ def sample_int(lambd, pi, i_old, pi_bg, n_pix, eta, tau_irf,  sig_irf, dt_padded
     beta_i = 2100
     i_new = i_old.copy()
     i_new[:,:] = np.random.gamma(alpha_prop, i_old[:,:]/alpha_prop)
-    lf_top = calculate_lifetime_likelihood_gpu_int(cp.asarray(i_new), cp.asarray(eta), pi_bg, tau_irf, sig_irf, dt_padded, tiled_mask, t_inter_p, num)
-    lf_bot = calculate_lifetime_likelihood_gpu_int(cp.asarray(i_old), cp.asarray(eta), pi_bg, tau_irf, sig_irf, dt_padded, tiled_mask, t_inter_p, num)
+    lf_top = calculate_lifetime_likelihood_gpu_int(cp.asarray(i_new), cp.asarray(eta), cp.asarray(pi_bg), tau_irf, sig_irf, dt_padded, tiled_mask, t_inter_p, num)
+    lf_bot = calculate_lifetime_likelihood_gpu_int(cp.asarray(i_old), cp.asarray(eta), cp.asarray(pi_bg), tau_irf, sig_irf, dt_padded, tiled_mask, t_inter_p, num)
 
     tmp_top = np.sum((i_new[:, :, None] * pi[:, None, :]), axis=0)
     a_top = np.sum(sc.poisson.logpmf(lambd, tmp_top), axis=1)

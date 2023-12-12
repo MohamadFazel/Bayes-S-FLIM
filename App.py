@@ -1,232 +1,293 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QFileDialog, QDialog, QHBoxLayout
-from PyQt5.QtGui import QPixmap, QFont
-from PyQt5.QtCore import Qt  # Add this line to import Qt
-from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QFileDialog, QLineEdit, QFormLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog, QProgressBar, QSizePolicy, QLineEdit, QFormLayout
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QPushButton, QFileDialog, QFormLayout, QLineEdit, QHBoxLayout, QVBoxLayout, QGridLayout
+from PyQt5.QtGui import QPixmap
 
-import numpy as np
+from PyQt5.QtGui import QPixmap
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import numpy as np
 from datetime import datetime
-import scipy as sc
+from modules.sflim import run_sflim_sampler
+from modules.forward import gen_data
+import scipy.io as sio
 import os
-from modules.sflim import run_sflim_sampler 
+import time
+from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtCore import Qt
+import qdarktheme
+
+import sys
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QVBoxLayout, QHBoxLayout,
+    QLabel, QPushButton, QFileDialog, QFormLayout, QLineEdit, QFrame
+)
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import numpy as np
+from datetime import datetime
+import scipy.io as sio
+import sys
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QVBoxLayout, QHBoxLayout,
+    QLabel, QPushButton, QFileDialog, QFormLayout, QLineEdit,
+)
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+import numpy as np
+from datetime import datetime
+import scipy.io as sio
+# from PySide2.QtWidgets import QApplication, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout, QLineEdit
 
 
-class FLIMAnalyzerGUI(QWidget):
+def apply_stylesheet(app):
+    app.setStyle("Fusion")
+
+    palette = app.palette()
+    palette.setColor(QPalette.Window, QColor(53, 53, 53))
+    palette.setColor(QPalette.WindowText, Qt.white)
+    palette.setColor(QPalette.Button, QColor(53, 53, 53))
+    palette.setColor(QPalette.ButtonText, Qt.white)
+    palette.setColor(QPalette.Base, QColor(25, 25, 25))
+    palette.setColor(QPalette.Highlight, QColor(142, 45, 197))
+    palette.setColor(QPalette.HighlightedText, Qt.black)
+    app.setPalette(palette)
+
+class FLIMAnalyzerApp(QWidget):
     def __init__(self):
         super().__init__()
+
+        self.file_path = ""
+        self.save_path = ""
+        self.TInterP = 12.85
+        self.TauIRF = 2.506
+        self.SigIRF = 0.51
+        self.num_species = 3
+        self.NIter = 200000
+        self.img_size = (128, 128)
+        self.slice_params = slice(54, 118, None), slice(0, 64, None)
+
         self.initUI()
 
     def initUI(self):
-        self.file_path = None
-        self.save_path = None
-        self.img_size = (128, 128)
-        self.slice_params = (54, 118, None), (0, 64, None)
+        apply_stylesheet(QApplication.instance())
 
-        self.setWindowTitle('FLIM Analyzer GUI')
+        self.setWindowTitle('FLIM Analyzer')
         self.setGeometry(100, 100, 800, 600)
 
-        self.layout = QVBoxLayout()
+        # Widgets
+        self.fileLabel = QLabel('Select File:')
+        self.fileButton = QPushButton(QIcon('upload.png'), 'Browse')
+        self.fileButton.clicked.connect(self.browseFile)
 
-        self.file_label = QLabel('Select File:')
-        self.file_label.setFont(QFont("Arial", 12, QFont.Bold))
-        self.layout.addWidget(self.file_label)
+        self.saveLabel = QLabel('Save Path:')
+        self.saveButton = QPushButton(QIcon('upload.png'), 'Browse')
+        self.saveButton.clicked.connect(self.browseSavePath)
 
-        self.file_button = QPushButton('Browse')
-        self.file_button.clicked.connect(self.showFileDialog)
-        self.layout.addWidget(self.file_button)
+        # Arrange file and save path horizontally
+        fileSaveLayout = QHBoxLayout()
+        fileSaveLayout.addWidget(self.fileLabel)
+        fileSaveLayout.addWidget(self.fileButton)
+        fileSaveLayout.addWidget(self.saveLabel)
+        fileSaveLayout.addWidget(self.saveButton)
 
-        self.save_label = QLabel('Select Save Path:')
-        self.save_label.setFont(QFont("Arial", 12, QFont.Bold))
-        self.layout.addWidget(self.save_label)
+        self.paramsLabel = QLabel('Analysis Parameters:')
+        self.paramsGridLayout = QGridLayout()
 
-        self.save_button = QPushButton('Browse')
-        self.save_button.clicked.connect(self.showSaveDialog)
-        self.layout.addWidget(self.save_button)
+        # Add parameters with two in each line
+        self.addParameter('Inrepulse Time:', 'TInterP', self.TInterP, placeholder_color="#FFD700", row=0, col=0)
+        self.addParameter('IRF Offset:', 'TauIRF', self.TauIRF, placeholder_color="#FFD700", row=0, col=2)
+        self.addParameter('IRF Std:', 'SigIRF', self.SigIRF, placeholder_color="#FFD700", row=1, col=0)
+        self.addParameter('Number of Species:', 'num_species', self.num_species, placeholder_color="#FFD700", row=1, col=2)
+        self.addParameter('Number of Iterations:', 'NIter', self.NIter, placeholder_color="#FFD700", row=2, col=0)
+        self.addParameter('Image Size (e.g., 128x128):', 'img_size', str(self.img_size), placeholder_color="#FFD700", row=2, col=2)
+        self.addParameter('Slice Parameters (e.g., 54:118, 0:64):', 'slice_params', str(self.slice_params), placeholder_color="#FFD700", row=3, col=0, col_span=3)
 
-        self.param_label = QLabel('Analysis Parameters:')
-        self.param_label.setFont(QFont("Arial", 12, QFont.Bold))
-        self.layout.addWidget(self.param_label)
+        self.displayButton = QPushButton('Display Image')
+        self.displayButton.clicked.connect(self.displayImage)
+        self.displayButton.setStyleSheet("background-color: #34A853; color: white;")
 
-        self.param_layout = QFormLayout()
+        self.runButton = QPushButton('Run Analysis')
+        self.runButton.clicked.connect(self.runAnalysis)
+        self.runButton.setStyleSheet("background-color: #4285F4; color: white;")
 
-        self.TInterP_edit = QLineEdit()
-        self.param_layout.addRow('Inrepulse Time (s):', self.TInterP_edit)
+        self.plotLabel = QLabel('Data Plot:')
+        self.frame =QFrame()
+        self.frame.setFrameStyle(QFrame.Panel | QFrame.Raised)
+        self.frame.setLineWidth(2)
+        self.canvas = MatplotlibCanvas(self.frame)
 
-        self.TauIRF_edit = QLineEdit()
-        self.param_layout.addRow('IRF Offset (s):', self.TauIRF_edit)
+        # Layout
+        layout = QVBoxLayout()
+        layout.addLayout(fileSaveLayout)
+        layout.addWidget(self.paramsLabel)
+        layout.addLayout(self.paramsGridLayout)
 
-        self.SigIRF_edit = QLineEdit()
-        self.param_layout.addRow('IRF Std (s):', self.SigIRF_edit)
+        # Button layout
+        buttonLayout = QHBoxLayout()
+        buttonLayout.addWidget(self.displayButton)
+        buttonLayout.addWidget(self.runButton)
 
-        self.num_species_edit = QLineEdit()
-        self.param_layout.addRow('Number of Species:', self.num_species_edit)
+        layout.addLayout(buttonLayout)
+        layout.addWidget(self.plotLabel)
+        
+        layout2 = QHBoxLayout()
+        layout2.addLayout(layout)
+        layout2.addWidget(self.canvas)
+        layout2.setStretchFactor(layout,1)
+        layout2.setStretchFactor(self.canvas,4)
+        self.setLayout(layout2)
 
-        self.NIter_edit = QLineEdit()
-        self.param_layout.addRow('Number of Iterations:', self.NIter_edit)
+    def addParameter(self, label, name, value, placeholder_color=None, row=None, col=None, col_span=None):
+        labelWidget = QLabel(label)
+        valueWidget = QLineEdit(str(value))
+        valueWidget.setObjectName(name)
 
-        self.img_size_edit = QLineEdit()
-        self.param_layout.addRow('Image Size (e.g., 128x128):', self.img_size_edit)
+        # Set the placeholder text color
+        if placeholder_color:
+            style_sheet = f"color: {placeholder_color};"
+            valueWidget.setStyleSheet(style_sheet)
 
-        self.slice_params_edit = QLineEdit()
-        self.param_layout.addRow('Slice Parameters (e.g., 54:118, 0:64):', self.slice_params_edit)
+        if row is not None and col is not None:
+            self.paramsGridLayout.addWidget(labelWidget, row, col, 1, 1)
+            self.paramsGridLayout.addWidget(valueWidget, row, col + 1, 1, col_span or 1)
+        else:
+            self.paramsGridLayout.addWidget(labelWidget)
+            self.paramsGridLayout.addWidget(valueWidget)
 
-        self.layout.addLayout(self.param_layout)
-
-        self.run_button = QPushButton('Run Analysis')
-        self.run_button.clicked.connect(self.runAnalysis)
-        self.run_button.setFont(QFont("Arial", 14, QFont.Bold))
-        self.layout.addWidget(self.run_button)
-
-        self.setLayout(self.layout)
-
-    
-    def showFileDialog(self):
-        """Show a file dialog to select a data file."""
+    def browseFile(self):
         options = QFileDialog.Options()
-        options |= QFileDialog.ReadOnly
-
+        options |= QFileDialog.DontUseNativeDialog
         file_dialog = QFileDialog()
-        file_dialog.setFileMode(QFileDialog.AnyFile)
-        file_dialog.setNameFilter("MAT files (*.mat);;All Files (*)")
-
+        file_dialog.setNameFilter("MAT files (*.mat)")
+        file_dialog.setFileMode(QFileDialog.ExistingFile)
         if file_dialog.exec_():
             self.file_path = file_dialog.selectedFiles()[0]
-            self.file_label.setText(f'Selected File: {self.file_path}')
 
-    def showSaveDialog(self):
-        """Show a save dialog to select a directory for saving results."""
+    def browseSavePath(self):
         options = QFileDialog.Options()
-        options |= QFileDialog.ReadOnly
-
+        options |= QFileDialog.DontUseNativeDialog
         save_dialog = QFileDialog()
         save_dialog.setFileMode(QFileDialog.Directory)
-
         if save_dialog.exec_():
             self.save_path = save_dialog.selectedFiles()[0]
-            self.save_label.setText(f'Selected Save Path: {self.save_path}')
 
-    def run_sflim_analysis(self, dt, lambda_, TInterP, TauIRF, SigIRF, NIter, M):
-            """Run the FLIM analysis using the specified parameters."""
-            return run_sflim_sampler(dt, lambda_, TInterP, TauIRF, SigIRF, TInterP, NIter, M)
-
-    def runAnalysis(self):
-        """Run the FLIM analysis."""
-        if self.file_path is None or self.save_path is None:
+    def displayImage(self):
+        if not self.file_path:
             return
 
-        # Retrieve parameter values from user input
-        TInterP = float(self.TInterP_edit.text())
-        TauIRF = float(self.TauIRF_edit.text())
-        SigIRF = float(self.SigIRF_edit.text())
-        NIter = int(self.NIter_edit.text())
-        img_size_str = self.img_size_edit.text().split('x')
-        img_size_str = self.img_size_edit.text().split('*')
-        self.img_size = (int(img_size_str[0]), int(img_size_str[1]))
-        slice_params_str = self.slice_params_edit.text().split(',')
-        self.slice_params = tuple(map(lambda x: slice(*map(int, x.split(':'))), slice_params_str))
-
-        # Load data from the specified file
-        mix = sc.io.loadmat(self.file_path)
+        mix = sio.loadmat(self.file_path)
         dt_mix = np.squeeze(mix["Dt"]).reshape(*self.img_size)
         dt_mix = dt_mix[self.slice_params]
-
-        # Calculate dummy_size
-        self.dummy_size = dt_mix.shape[1]
+        dummy_size = dt_mix.shape[1]
 
         dt = dt_mix.reshape(-1)
-        
+        l = [len(dt[i]) for i in range(len(dt))]
+        l = np.array(l).reshape(-1, dummy_size)
+        self.canvas.plotData(l)
+
+    def runAnalysis(self):
+        # Get updated parameter values from the GUI
+        self.TInterP = float(self.findChild(QLineEdit, 'TInterP').text())
+        self.TauIRF = float(self.findChild(QLineEdit, 'TauIRF').text())
+        self.SigIRF = float(self.findChild(QLineEdit, 'SigIRF').text())
+        self.num_species = int(self.findChild(QLineEdit, 'num_species').text())
+        self.NIter = int(self.findChild(QLineEdit, 'NIter').text())
+
+        # Update img_size and slice_params from the GUI
+        img_size_str = self.findChild(QLineEdit, 'img_size').text()
+        slice_params_str = self.findChild(QLineEdit, 'slice_params').text()
+
+
+        try:
+            self.img_size = tuple(map(int, img_size_str.split('x')))
+            self.slice_params = tuple(slice(map(int, s.split(':'))) for s in slice_params_str.split(','))
+        except ValueError:
+            # Handle invalid input gracefully
+            print("Invalid input for img_size or slice_params")
+
+
+        if not self.file_path or not self.save_path:
+            return
+
+        mix = sio.loadmat(self.file_path)
+        dt_mix = np.squeeze(mix["Dt"]).reshape(*self.img_size)
+        dt_mix = dt_mix[self.slice_params]
+        dummy_size = dt_mix.shape[1]
+
+        dt = dt_mix.reshape(-1)
+        l = [len(dt[i]) for i in range(len(dt))]
+        l = np.array(l).reshape(-1, dummy_size)
+        self.canvas.plotData(l)
+        self.canvas.draw()
+
+
         lam_mix = mix["Lambda"]
         lam_mix = lam_mix.reshape(-1, self.img_size[1], lam_mix.shape[1])
         lam_mix = lam_mix[self.slice_params]
 
         lambda_ = lam_mix.reshape(-1, lam_mix.shape[2])
 
-        # Display the image for confirmation
-        confirmation = self.confirmationDialog(dt)
-        if confirmation == QDialog.Rejected:
-            return  # User canceled the operation
+        t0 = datetime.now()
+        timestr = time.strftime("%m%d%H%M%S")
 
-        # Assuming you have a function run_sflim_analysis, replace this with your actual analysis code
-        pi, photon_int, eta, bg = self.run_sflim_analysis(dt, lambda_, TInterP, TauIRF, SigIRF, NIter, self.num_species)
+        pi, photon_int, eta, bg = run_sflim_sampler(dt, lambda_, self.TInterP, self.TauIRF, self.SigIRF, self.TInterP, self.NIter, self.num_species)
 
-        # Save the results
-        timestr = datetime.now().strftime("%m%d%H%M%S")
-        np.save(f"{self.save_path}/Pi_results_{timestr}.npy", pi)
-        np.save(f"{self.save_path}/photon_int_results_{timestr}.npy", photon_int)
-        np.save(f"{self.save_path}/Eta_results_{timestr}.npy", eta)
-        np.save(f"{self.save_path}/Bg_results_{timestr}.npy", bg)
+        np.save(f"{self.save_path}/Pi_{timestr}.npy", pi)
+        np.save(f"{self.save_path}/int_{timestr}.npy", photon_int)
+        np.save(f"{self.save_path}/Eta_{timestr}.npy", eta)
 
-        # Show the results (you can modify this part based on your requirements)
-        self.showResults(photon_int, eta, bg)
-
-    def run_sflim_analysis(self, dt, lambda_, TInterP, TauIRF, SigIRF, NIter):
-        """Placeholder for your FLIM analysis code."""
-        # Replace this with your actual analysis function
-        return run_sflim_sampler(dt, lambda_, TInterP, TauIRF, SigIRF, TInterP, NIter, M)
-    
-    def confirmationDialog(self, image_data):
-        """Show a confirmation dialog with the displayed image."""
-        dialog = QDialog(self)
-        dialog.setWindowTitle('Confirmation Dialog')
-
-        layout = QVBoxLayout()
-
-        # Display the image using matplotlib
-        fig, ax = plt.subplots()
-        ax.imshow(image_data.reshape(self.img_size), cmap='gray')
-        canvas = FigureCanvas(fig)
-        layout.addWidget(canvas)
-
-        # Add a confirmation message
-        confirmation_label = QLabel('Do you want to proceed with the analysis?')
-        layout.addWidget(confirmation_label)
-
-        # Add confirmation buttons
-        confirm_button = QPushButton('Yes')
-        confirm_button.clicked.connect(dialog.accept)
-        layout.addWidget(confirm_button)
-
-        cancel_button = QPushButton('Cancel')
-        cancel_button.clicked.connect(dialog.reject)
-        layout.addWidget(cancel_button)
-
-        dialog.setLayout(layout)
-
-        # Show the dialog and return the user's choice
-        return dialog.exec_()
-    
-    def showResults(self, photon_int, eta, bg):
-        """Show or visualize the FLIM analysis results."""
-        # Extract file name without extension
-        file_name = os.path.basename(self.file_path)
-        name_without_extension = os.path.splitext(file_name)[0]
-
-        # Example: Display intensity images
         num_avg = self.NIter // 8
         phi = np.mean(photon_int[-num_avg:, :, :], axis=0)
-        phi = phi.reshape(phi.shape[0], -1, self.dummy_size)
+        phi = phi.reshape(phi.shape[0], -1, dummy_size)
         for it in range(self.num_species):
-            plt.imshow(phi[it])
-            plt.savefig(f"{self.save_path}/intensity_{name_without_extension}_{it}.png")
+            self.canvas.plotData(phi[it])
+            self.canvas.draw()
 
-        # Example: Display lifetime histograms
         for it in range(self.num_species):
-            plt.hist(1 / eta[-num_avg:, 0], bins=100, color="red", label="Viafluor")
-            plt.savefig(f"{self.save_path}/lifetime_{name_without_extension}_{it}.png")
+            self.canvas.plotHistogram(1 / eta[-num_avg:, 0], bins=100, color="red", label="Viafluor")
+            self.canvas.draw()
 
-        pin = np.mean(pi[-num_avg:,:,:], axis=0)
+        pin = np.mean(pi[-num_avg:, :, :], axis=0)
         for it in range(self.num_species):
-            plt.plot(pin[1]/np.sum(pin[1]),'r', label="2_Learned")
-            plt.savefig(f"{self.save_path}/spectrum_{name_without_extension}_{it}.png")
-        plt.plot(bg[-num_avg:])
-        plt.savefig(f"{self.save_path}/bg_{name_without_extension}_{it}.png")
+            self.canvas.plotData(pin[1] / np.sum(pin[1]), 'r', label="2_Learned")
+            self.canvas.draw()
 
+        self.canvas.plotData(bg[-num_avg:])
+        self.canvas.draw()
+
+
+class MatplotlibCanvas(FigureCanvas):
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        self.fig, self.ax = plt.subplots(figsize=(width, height), dpi=dpi)
+        FigureCanvas.__init__(self, self.fig)
+        self.setParent(parent)
+
+    def plotData(self, image):
+        self.ax.clear()
+        self.ax.imshow(image, cmap='gray')  # Use the appropriate cmap for your data
+        self.draw()
+
+class MyWidget(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.canvas = MatplotlibCanvas(self)
+        layout = QVBoxLayout()
+        layout.addWidget(self.canvas)
+        self.setLayout(layout)
+
+    def updateImage(self, image):
+        self.canvas.showImage(image)
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = FLIMAnalyzerGUI()
+    # qdarktheme.setup_theme("dark")
+
+    ex = FLIMAnalyzerApp()
     ex.show()
     sys.exit(app.exec_())

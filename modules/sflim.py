@@ -57,8 +57,8 @@ def run_sflim_sampler(dt, lambda_, t_interp, tau_irf, sig_irf, t_inter_p, n_iter
     for ii in range(npix):
         photon_int[0, 0:m, ii] = np.random.gamma(1,1500, size=m)
 
-    pi_bg = np.zeros(num_itr)
-    pi_bg[0] = np.random.rand()
+    pi_bg = np.zeros((num_itr, npix))
+    pi_bg[0] = np.random.rand()/10
     ################################################################
 
     # Sampling the parameters

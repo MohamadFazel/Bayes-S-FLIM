@@ -26,8 +26,8 @@ def sample_lifetime(photon_int, eta_old, pi_bg, tau_irf,  sig_irf, dt_padded, ti
     eta_prop = np.random.gamma(alpha_prop, eta_old/alpha_prop)
 
 
-    lf_top = calculate_lifetime_likelihood_gpu(cp.asarray(photon_int), cp.asarray(eta_prop), pi_bg, tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num)
-    lf_bot = calculate_lifetime_likelihood_gpu(cp.asarray(photon_int), cp.asarray(eta_old), pi_bg, tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num)
+    lf_top = calculate_lifetime_likelihood_gpu(cp.asarray(photon_int), cp.asarray(eta_prop), cp.asarray(pi_bg), tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num)
+    lf_bot = calculate_lifetime_likelihood_gpu(cp.asarray(photon_int), cp.asarray(eta_old), cp.asarray(pi_bg), tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num)
 
     lik_ratio = (lf_top - lf_bot)
     a_prior = np.sum(sc.gamma.logpdf(eta_prop, alpha_eta, scale=beta_eta)) - np.sum(sc.gamma.logpdf(eta_old, alpha_eta, scale=beta_eta))
