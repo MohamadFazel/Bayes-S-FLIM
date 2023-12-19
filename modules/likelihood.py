@@ -25,7 +25,7 @@ def calculate_lifetime_likelihood_gpu(photon_int, eta, pi_bg, tau_irf, sig_irf, 
     masked_arr = cp.sum(lf_cont , axis=(0,3))
     masked = masked_arr.copy()
     masked_arr *=  (1-pi_bg[:,None])
-    masked_arr += (cp.ones(masked_arr.shape) + pi_bg[:,None]/t_inter_p)
+    masked_arr += (pi_bg[:,None]/t_inter_p)
     masked_arr = masked_arr[masked!=0]
     return float(cp.sum(cp.log(masked_arr)))
 
@@ -51,7 +51,7 @@ def calculate_lifetime_likelihood_gpu_int(photon_int, eta, pi_bg, tau_irf, sig_i
     masked_arr = cp.sum(lf_cont , axis=(0,3))
     masked = masked_arr.copy()
     masked_arr *=  (1-pi_bg[:,None])
-    masked_arr += (cp.ones(masked_arr.shape) + pi_bg[:,None]/t_inter_p)
+    masked_arr += (pi_bg[:,None]/t_inter_p)
     log_masked_arr = cp.log(masked_arr)
     log_masked_arr[masked==0] =0
     return cp.asnumpy(cp.sum(log_masked_arr, axis=1))
