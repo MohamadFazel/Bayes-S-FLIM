@@ -23,7 +23,7 @@ def gen_data(n_pix, n_pulse, t_inter_p, lifetimes, spec_ind, exc_probs, tau_irf,
             spec_inten (ndarray): Number of simulated photons per spectral band per pixel per species.
     '''
     n_spec = lifetimes.size
-    mu = np.array([[680,630], [460, 498], [590, 548], [400,440], [715,670], [515, 465], [640, 590], [535,570], [420,470]])
+    mu = np.array([[555,537], [400,415], [655, 640], [483, 502], [620,635], [585, 603], [698, 678], [432,454], [515,531]])
     sigma = np.random.randint(10, 20, size=(n_spec, 2))
     sigma[:,0] = np.random.randint(10, 30, size=n_spec)
     spec_bands = np.linspace(375, 760, 32)
@@ -34,18 +34,16 @@ def gen_data(n_pix, n_pulse, t_inter_p, lifetimes, spec_ind, exc_probs, tau_irf,
     spec_inten = np.zeros((n_pix, nn, n_channel))
     dt = []
     s = []
-    total_exc_prob = np.sum(exc_probs, axis=0)
-    exc_probs = (exc_probs / total_exc_prob).T
+    total_exc_prob = np.sum(exc_probs, axis=1)
+    exc_probs = (exc_probs / total_exc_prob[:,None])
     for pp in range(n_pix):
-
-
+        
         pulse_excitation = 1 - np.exp(-2 * sig_irf * total_exc_prob[pp])
         pulse_excitation = pulse_excitation > np.random.rand(n_pulse)
 
         exc_pulse_indices = np.where(pulse_excitation)[0]
         exc_species_indices = np.random.choice(n_spec, size=len(exc_pulse_indices), p=exc_probs[pp])
         exc_species_lifetimes = lifetimes[exc_species_indices]
-
         exc_times = np.random.normal(tau_irf, sig_irf, len(exc_pulse_indices)) + np.random.exponential(exc_species_lifetimes)
         arrival_times = exc_times - t_inter_p * np.floor(exc_times / t_inter_p)
 
@@ -53,7 +51,6 @@ def gen_data(n_pix, n_pulse, t_inter_p, lifetimes, spec_ind, exc_probs, tau_irf,
         tmp_lamds = np.random.normal(mu[exc_species_indices, index_lambda], sigma[exc_species_indices,index_lambda])
         tmp_id = np.digitize(tmp_lamds, spec_bands) - 1
         tmp_id = np.clip(tmp_id, 0, 31)
-
         lambda_[pp] += np.bincount(tmp_id, minlength=32)
         s.append(exc_species_indices)
         dt.append(arrival_times)
