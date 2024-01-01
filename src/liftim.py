@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.stats as sc
 import cupy as cp
-from modules.likelihood import calculate_lifetime_likelihood_gpu
+from src.likelihood import calculate_lifetime_likelihood_gpu
 
 def sample_lifetime(photon_int, eta_old, pi_bg, tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num, accept_eta):
     '''

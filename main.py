@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pylab as plt
 from datetime import datetime
-from modules.sflim import run_sflim_sampler
-from modules.forward import gen_data
+from src.sflim import run_sflim_sampler
+from src.forward import gen_data
 import scipy.io as sio
 
 data = sio.loadmat("Data_08_2023/3-color mixture.mat")

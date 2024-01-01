@@ -1,6 +1,6 @@
 import time
-from modules.sflim import run_sflim_sampler
-from modules.forward import *
+from src.sflim import run_sflim_sampler
+from src.forward import *
 
 # Get the current time in a formatted string
 timestr = time.strftime("%m%d%H%M%S")

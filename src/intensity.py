@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.stats as sc
-from modules.likelihood import *
+from src.likelihood import *
 
 def sample_int(lambd, pi, i_old, pi_bg, n_pix, eta, tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num, accept_i):
     '''

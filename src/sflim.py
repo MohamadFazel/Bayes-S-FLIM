@@ -1,9 +1,9 @@
 import numpy as np
 import cupy as cp
-from modules.ratio import *
-from modules.intensity import *
-from modules.liftim import *
-from modules.background import *
+from src.ratio import *
+from src.intensity import *
+from src.liftim import *
+from src.background import *
 
 
 def run_sflim_sampler(dt, lambda_, t_interp, tau_irf, sig_irf, t_inter_p, n_iter, m):

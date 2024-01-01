@@ -1,6 +1,6 @@
 import cupy as cp
 from cupyx.scipy import special
-from modules.likelihood import calculate_lifetime_likelihood_gpu
+from src.likelihood import calculate_lifetime_likelihood_gpu
 import numpy as np
 import scipy.stats as sc
 

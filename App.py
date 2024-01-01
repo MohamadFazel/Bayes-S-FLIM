@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import numpy as np
 from datetime import datetime
-from modules.sflim import run_sflim_sampler
-from modules.forward import gen_data
+from src.sflim import run_sflim_sampler
+from src.forward import gen_data
 import scipy.io as sio
 import os
 import time
