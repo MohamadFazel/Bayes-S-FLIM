@@ -31,7 +31,7 @@
      <number>8</number>
     </property>
     <item>
-     <widget class="QFrame" name="">
+     <widget class="QFrame" name="frame">
       <property name="frameShape">
        <enum>QFrame::Box</enum>
       </property>
@@ -194,6 +194,54 @@
         </widget>
        </item>
        <item>
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="messege">
+         <property name="font">
+          <font>
+           <pointsize>16</pointsize>
+           <weight>75</weight>
+           <italic>false</italic>
+           <bold>true</bold>
+           <underline>false</underline>
+           <strikeout>false</strikeout>
+          </font>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
+         <property name="lineWidth">
+          <number>1</number>
+         </property>
+         <property name="midLineWidth">
+          <number>2</number>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="textFormat">
+          <enum>Qt::AutoText</enum>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -214,7 +262,7 @@
       <property name="frameShape">
        <enum>QFrame::Box</enum>
       </property>
-      <layout class="QGridLayout" name="gridLayout_3" rowstretch="1,15,1">
+      <layout class="QGridLayout" name="gridLayout_3" rowstretch="1,0,0">
        <item row="2" column="1">
         <widget class="QPushButton" name="pushButton">
          <property name="text">
@@ -222,15 +270,18 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="0" colspan="4">
-        <widget class="QWidget" name="galleryWidget" native="true"/>
-       </item>
-       <item row="2" column="2">
-        <widget class="QPushButton" name="pushButton_2">
-         <property name="text">
-          <string>Next</string>
+       <item row="0" column="3">
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
          </property>
-        </widget>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
        <item row="2" column="0">
         <spacer name="horizontalSpacer">
@@ -245,6 +296,48 @@
          </property>
         </spacer>
        </item>
+       <item row="0" column="1" colspan="2">
+        <widget class="QComboBox" name="comboBox">
+         <item>
+          <property name="text">
+           <string>Lifetime Histogram</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Images</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Spectrum</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <spacer name="horizontalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="0" colspan="4">
+        <widget class="QWidget" name="galleryWidget" native="true"/>
+       </item>
+       <item row="2" column="2">
+        <widget class="QPushButton" name="pushButton_2">
+         <property name="text">
+          <string>Next</string>
+         </property>
+        </widget>
+       </item>
        <item row="2" column="3">
         <spacer name="horizontalSpacer_2">
          <property name="orientation">
@@ -257,22 +350,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-       <item row="0" column="0" colspan="4">
-        <widget class="QLabel" name="label_7">
-         <property name="frameShape">
-          <enum>QFrame::Panel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Sunken</enum>
-         </property>
-         <property name="text">
-          <string>pic_lablel</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
        </item>
       </layout>
      </widget>

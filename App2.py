@@ -9,8 +9,7 @@ from qt_material import apply_stylesheet
 from PyQt5.QtWidgets import QFileDialog, QVBoxLayout
 import matplotlib.pylab as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from PyQt5.QtGui import QPixmap, QImage
-
+import time
 # plt.style.use('seaborn-v0_8-dark-palette')
 # print(plt.style.available)
 class MainWindow(QtWidgets.QMainWindow):
@@ -26,7 +25,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # Ensure galleryWidget has a layout set
         if self.galleryWidget.layout() is None:
             self.galleryWidget.setLayout(QVBoxLayout())  # Assuming a QVBoxLayout, change as needed
-
+        self.analysis_run = False
         self.ui.load_data.clicked.connect(self.browseFile)
         self.ui.save_path.clicked.connect(self.browseSavePath)
         self.ui.run_analy.clicked.connect(self.runAnalysis)
@@ -35,9 +34,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.sig_irf.setText(str(0.51))
         self.ui.tau_irf.setText(str(2.506))
         self.ui.num_iter.setText(str(200000))
+        self.ui.img_size.setText(str((128, 128)))
+        self.ui.messege.setStyleSheet("color: red;")
+        self.ui.messege.setText(str("Wait For Analysis"))
         self.figure, self.ax = plt.subplots()
         self.canvas = FigureCanvas(self.figure)
         self.galleryWidget.layout().addWidget(self.canvas)
+        
         # Call a function to update the plot
         
 
@@ -56,8 +59,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.time_data = np.squeeze(self.file_data["Dt"]).reshape(128,128)
             self.time_data = self.time_data[self.slice_params]
             dummy_size = self.time_data.shape[1]
-            time_values = self.time_data.reshape(-1)
-            photon_count = [len(time_values[i]) for i in range(len(time_values))]
+            self.time_values = self.time_data.reshape(-1)
+            photon_count = [len(self.time_values[i]) for i in range(len(self.time_values))]
             photon_count = np.array(photon_count).reshape(-1, dummy_size)
             self.update_plot(photon_count)
 
@@ -71,29 +74,35 @@ class MainWindow(QtWidgets.QMainWindow):
             self.save_path = save_dialog.selectedFiles()[0]
 
     def runAnalysis(self):
+        self.ui.messege.setStyleSheet("color: yellow;")
+        self.ui.messege.setText(str("Analysis IS Running"))
+        time.sleep(10)
+
         # Get updated parameter values from the GUI
         self.t_inter_pulse = self.ui.intepulse_time.text()
         self.tau_irf = self.ui.tau_irf.text()
         self.sig_irf = self.ui.sig_irf.text()
         self.num_species = self.ui.num_iter.text()
         self.n_iter = self.ui.num_iter.text()  # Corrected the variable name
-        # self.img_size = self.ui.intepulse_time.text()
-
-        # Extract wavelength-related information
+        self.img_size = tuple(map(int, self.ui.img_size.text().strip('()').split(',')))
+        # Extract wavelength-related in formation
         wavelength_data = self.file_data["Lambda"]
-        wavelength_data = wavelength_data.reshape(-1, self.img_size[1], wavelength_data.shape[1])
+        wavelength_data = wavelength_data.reshape(-1, self.img_size[0], wavelength_data.shape[1])
         wavelength_data = wavelength_data[self.slice_params]
         self.wavelength_values = wavelength_data.reshape(-1, wavelength_data.shape[2])
-        
         self.pi, self.photon_int, self.eta, self.bg = run_sflim_sampler(
             self.time_values,  # Assuming dt corresponds to time values
             self.wavelength_values,  # Assuming lambda_ corresponds to wavelength values
-            self.t_inter_pulse,
             self.tau_irf,
             self.sig_irf,
+            self.t_inter_pulse,
             self.n_iter,  # Assuming NIter corresponds to the number of iterations
             self.num_species
         )
+        self.analysis_run = True
+        self.ui.messege.setStyleSheet("color: green;")
+        self.ui.messege.setText(str("Analysis Is Done"))
+
 
     def update_plot(self, img_data):
         # Your Matplotlib plotting code here

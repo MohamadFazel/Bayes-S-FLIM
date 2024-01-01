@@ -6,7 +6,7 @@ from src.liftim import *
 from src.background import *
 
 
-def run_sflim_sampler(dt, lambda_, t_interp, tau_irf, sig_irf, t_inter_p, n_iter, m):
+def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
 
     """
     Runs the Gibbs sampling procedure for spectral fluorescence lifetime imaging microscopy (SFLIM).

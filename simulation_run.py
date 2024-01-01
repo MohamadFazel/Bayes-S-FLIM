@@ -20,7 +20,7 @@ background = 0
 
 
 # Generate synthetic data
-dt, lambda_, s, mu, sigma = gen_data(num_species, num_pulses, inter_pulse_time, lifetimes, spec_indices, excitation_probs, irf_offset, irf_sigma, background)
+dt, lambda_, s, mu, sigma = gen_data(num_pixels, num_pulses, inter_pulse_time, lifetimes, spec_indices, excitation_probs, irf_offset, irf_sigma, background)
 
 # Run SpectralFlim sampler
 pi, photon_int, eta, pi_bg = run_sflim_sampler(dt, lambda_, inter_pulse_time, irf_offset, irf_sigma, inter_pulse_time, num_iterations, num_species)
