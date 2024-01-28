@@ -1,8 +1,8 @@
-from modules.gen_shape import *
-from modules.foraward_shape import *
+from src.gen_shape import *
+from src.gen_shape import *
 import time
-from modules.sflim import run_sflim_sampler
-from modules.forward import *
+from src.sflim import run_sflim_sampler
+from src.forward import *
 from scipy.io import savemat
 
 img1 = generate_map_1().reshape(-1)
