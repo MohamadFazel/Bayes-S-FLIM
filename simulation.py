@@ -26,13 +26,13 @@ excitation_probs = excitation_probs.reshape(-1,4)
 
 for it in range(excitation_probs.shape[0]):
     if img1[it]>0.1:
-        excitation_probs[it,0] = img1[it]* 0.000004 #np.random.randint(6,10) * 0.0009
+        excitation_probs[it,0] = img1[it]* 0.000003 #np.random.randint(6,10) * 0.0009
     if img2[it]>0.1:
-        excitation_probs[it,1] = img2[it]* 0.000016 #np.random.randint(6,10) * 0.0009
+        excitation_probs[it,1] = img2[it]* 0.000012 #np.random.randint(6,10) * 0.0009
     if np.abs(img3[it])>0:
-        excitation_probs[it,2] = img3[it]* 0.000008 #np.random.randint(6,10)*0.0009
+        excitation_probs[it,2] = img3[it]* 0.000006 #np.random.randint(6,10)*0.0009
     if np.abs(img4[it])>0:
-        excitation_probs[it,3] = img4[it]* 0.00003 #np.random.randint(6,10)*0.0009
+        excitation_probs[it,3] = img4[it]* 0.000023 #np.random.randint(6,10)*0.0009
 
 save_dir = "/media/reza/44ec9f87-1051-4bdf-8f53-fcf9d10c68a5/FLIM_results/4_particle"
 
@@ -129,7 +129,7 @@ print(excitation_probs.max())
 # exit()
 irf_offset = 2.5
 irf_sigma = 0.5
-num_iterations = 160000
+num_iterations = 120000
 background = 0
 
 
