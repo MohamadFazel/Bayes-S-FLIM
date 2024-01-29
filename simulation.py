@@ -34,35 +34,35 @@ for it in range(excitation_probs.shape[0]):
     if np.abs(img4[it])>0:
         excitation_probs[it,3] = img4[it]* 0.00003 #np.random.randint(6,10)*0.0009
 
-save_dir = ""
+save_dir = "/media/reza/44ec9f87-1051-4bdf-8f53-fcf9d10c68a5/FLIM_results/4_particle"
 
 img = excitation_probs[:,0].reshape(-1,b)
 print(img.max())
 plt.imshow(img, cmap='Blues')
-plt.savefig("/media/reza/48F5-A7A5/pics/4Particle/img1.png")
+plt.savefig(f"{save_dir}/img1.png")
 plt.show()
-np.save("/media/reza/48F5-A7A5/pics/4Particle/img1.npy",img)
+np.save(f"{save_dir}/img1.npy",img)
 
 img = excitation_probs[:,1].reshape(-1,b)
 print(img.max())
 plt.imshow(img, cmap='Greens')
-plt.savefig("/media/reza/48F5-A7A5/pics/4Particle/img2.png")
+plt.savefig(f"{save_dir}/img2.png")
 plt.show()
-np.save("/media/reza/48F5-A7A5/pics/4Particle/img2.npy",img)
+np.save(f"{save_dir}/img2.npy",img)
 
 img = excitation_probs[:,2].reshape(-1,b)
 print(img.max())
 plt.imshow(img, cmap='Oranges')
-plt.savefig("/media/reza/48F5-A7A5/pics/4Particle/img3.png")
+plt.savefig(f"{save_dir}/img3.png")
 plt.show()
-np.save("/media/reza/48F5-A7A5/pics/4Particle/img3.npy",img)
+np.save(f"{save_dir}/img3.npy",img)
 
 img = excitation_probs[:,3].reshape(-1,b)
 print(img.max())
 plt.imshow(img, cmap='Purples')
-plt.savefig("/media/reza/48F5-A7A5/pics/4Particle/img4.png")
+plt.savefig(f"{save_dir}/img4.png")
 plt.show()
-np.save("/media/reza/48F5-A7A5/pics/4Particle/img4.npy",img)
+np.save(f"{save_dir}/img4.npy",img)
 
 # img = excitation_probs[:,3].reshape(-1,b)
 # print(img.max())
@@ -111,9 +111,9 @@ np.save("/media/reza/48F5-A7A5/pics/4Particle/img4.npy",img)
 img = np.sum(excitation_probs[:,:], axis=1).reshape(-1,b)
 print(img.max())
 plt.imshow(img, cmap='gray')
-plt.savefig("/media/reza/48F5-A7A5/pics/4Particle/img.png")
+plt.savefig(f"{save_dir}/img.png")
 plt.show()
-np.save("/media/reza/48F5-A7A5/pics/4Particle/img.npy",img)
+np.save(f"{save_dir}/img.npy",img)
 
 # Set parameters for data generation
 num_species = 4
@@ -136,7 +136,7 @@ background = 0
 # Generate synthetic data
 dt, lambda_, s, mu, sigma = gen_data(num_pixels, num_pulses, inter_pulse_time, lifetimes, spec_indices, excitation_probs, irf_offset, irf_sigma, background)
 
-np.save(f"/media/reza/48F5-A7A5/pics/4Particle/lambda_.npy", lambda_)
+np.save(f"{save_dir}/lambda_.npy", lambda_)
 # np.save(f"/media/reza/48F5-A7A5/pics/4Particle/dt.npy", dt)
 matlab_structure = {}
 
@@ -146,18 +146,18 @@ for i, sublist in enumerate(dt):
     matlab_structure[field_name] = np.array(sublist)
 
 # Save the structure as a .mat file
-savemat('/media/reza/48F5-A7A5/pics/4Particle/output_file.mat', matlab_structure)
+savemat(f"{save_dir}/output_file.mat", matlab_structure)
 
 
 
 # Run SpectralFlim sampler
-pi, photon_int, eta, pi_bg = run_sflim_sampler(dt, lambda_, inter_pulse_time, irf_offset, irf_sigma, inter_pulse_time, num_iterations, num_species)
+pi, photon_int, eta, pi_bg = run_sflim_sampler(dt, lambda_, irf_offset, irf_sigma, inter_pulse_time, num_iterations, num_species)
 
 
 timestr = time.strftime("%m%d%H%M")
-np.save(f"/media/reza/48F5-A7A5/pics/4Particle/Pi_{timestr}.npy", pi)
-np.save(f"/media/reza/48F5-A7A5/pics/4Particle/Phot_{timestr}.npy", photon_int)
-np.save(f"/media/reza/48F5-A7A5/pics/4Particle/Eta_{timestr}.npy", eta)
+np.save(f"{save_dir}/Pi_{timestr}.npy", pi)
+np.save(f"{save_dir}/Phot_{timestr}.npy", photon_int)
+np.save(f"{save_dir}/Eta_{timestr}.npy", eta)
 
-np.save(f"/media/reza/48F5-A7A5/pics/4Particle/sigma_{timestr}.npy", sigma)
-np.save(f"/media/reza/48F5-A7A5/pics/4Particle/mu_{timestr}.npy", mu)
+np.save(f"{save_dir}/sigma_{timestr}.npy", sigma)
+np.save(f"{save_dir}/mu_{timestr}.npy", mu)
