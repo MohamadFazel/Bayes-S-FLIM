@@ -20,7 +20,7 @@ def sample_lifetime(photon_int, eta_old, pi_bg, tau_irf,  sig_irf, dt_padded, ti
     Returns:
         tuple: Tuple containing the updated eta array and the updated accept_eta value.
     '''
-    alpha_prop = 30000
+    alpha_prop = 10000
     alpha_eta = 1
     beta_eta = 20
     eta_prop = np.random.gamma(alpha_prop, eta_old/alpha_prop)
