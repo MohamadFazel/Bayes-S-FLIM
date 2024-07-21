@@ -1,5 +1,10 @@
 import numpy as np
+from scipy import io
 
-a = np.load("/media/reza/44ec9f87-1051-4bdf-8f53-fcf9d10c68a5/flim_old/single/Mix#1_Eta_1105081850.npy")
+data = io.loadmat(
+    "/home/reza/software/Spectral-FLIM/1color_shiftedIRF_MitoOrange_EntireData.mat"
+)
+dt = np.squeeze(data["Dt"])
+lambda_ = data["Lambda"]
 
-print(a.shape)
+print(lambda_[5000, :])
