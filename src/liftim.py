@@ -3,8 +3,20 @@ import scipy.stats as sc
 import cupy as cp
 from src.likelihood import calculate_lifetime_likelihood_gpu
 
-def sample_lifetime(photon_int, eta_old, pi_bg, tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num, accept_eta):
-    '''
+
+def sample_lifetime(
+    photon_int,
+    eta_old,
+    pi_bg,
+    tau_irf,
+    sig_irf,
+    dt_padded,
+    tiled_mask,
+    t_inter_p,
+    num,
+    accept_eta,
+):
+    """
     sampling the lifetime of species
     Args:
         lambd: number of photons per spectral band
@@ -19,24 +31,46 @@ def sample_lifetime(photon_int, eta_old, pi_bg, tau_irf,  sig_irf, dt_padded, ti
         accept_eta: sampling acceptance rate
     Returns:
         tuple: Tuple containing the updated eta array and the updated accept_eta value.
-    '''
+    """
     alpha_prop = 10000
     alpha_eta = 1
     beta_eta = 20
-    eta_prop = np.random.gamma(alpha_prop, eta_old/alpha_prop)
+    eta_prop = np.random.gamma(alpha_prop, eta_old / alpha_prop)
 
+    lf_top = calculate_lifetime_likelihood_gpu(
+        cp.asarray(photon_int),
+        cp.asarray(eta_prop),
+        cp.asarray(pi_bg),
+        tau_irf,
+        sig_irf,
+        dt_padded,
+        tiled_mask,
+        t_inter_p,
+        num,
+    )
+    lf_bot = calculate_lifetime_likelihood_gpu(
+        cp.asarray(photon_int),
+        cp.asarray(eta_old),
+        cp.asarray(pi_bg),
+        tau_irf,
+        sig_irf,
+        dt_padded,
+        tiled_mask,
+        t_inter_p,
+        num,
+    )
 
-    lf_top = calculate_lifetime_likelihood_gpu(cp.asarray(photon_int), cp.asarray(eta_prop), cp.asarray(pi_bg), tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num)
-    lf_bot = calculate_lifetime_likelihood_gpu(cp.asarray(photon_int), cp.asarray(eta_old), cp.asarray(pi_bg), tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num)
-
-    lik_ratio = (lf_top - lf_bot)
-    a_prior = np.sum(sc.gamma.logpdf(eta_prop, alpha_eta, scale=beta_eta)) - np.sum(sc.gamma.logpdf(eta_old, alpha_eta, scale=beta_eta))
-    a_prop = np.sum(sc.gamma.logpdf(eta_old, alpha_prop, scale= (eta_prop/alpha_prop))) -np.sum(sc.gamma.logpdf(eta_prop, alpha_prop, scale= (eta_old/alpha_prop)))
+    lik_ratio = lf_top - lf_bot
+    a_prior = np.sum(sc.gamma.logpdf(eta_prop, alpha_eta, scale=beta_eta)) - np.sum(
+        sc.gamma.logpdf(eta_old, alpha_eta, scale=beta_eta)
+    )
+    a_prop = np.sum(
+        sc.gamma.logpdf(eta_old, alpha_prop, scale=(eta_prop / alpha_prop))
+    ) - np.sum(sc.gamma.logpdf(eta_prop, alpha_prop, scale=(eta_old / alpha_prop)))
 
     acc_ratio = lik_ratio + a_prop + a_prior
     if acc_ratio > np.log(np.random.rand()):
         eta_old = eta_prop
         accept_eta += 1
-
 
     return eta_old, accept_eta

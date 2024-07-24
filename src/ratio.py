@@ -1,7 +1,8 @@
 import numpy as np
 import scipy.stats as sc
-def sample_photon_probability(lambd, pi_old, photon_int, accept_pi):
 
+
+def sample_photon_probability(lambd, pi_old, photon_int, accept_pi):
     """
     Sample the probability of a photon from the species to be detected in the lth spectral band.
 
@@ -36,13 +37,16 @@ def sample_photon_probability(lambd, pi_old, photon_int, accept_pi):
     lam = lambd[tmp_bot > 0.001]
     a_bottom = sc.poisson.logpmf(lam, tmp_b).sum()
 
-
     # Calculating priors and proposal distributions
     a_prop = 0
     a_prior = 0
     for mm in range(pi_old.shape[0]):
-        a_prop += np.sum(sc.dirichlet.logpdf(pi_old[mm,:], pi_new[mm,:])) - np.sum(sc.dirichlet.logpdf(pi_new[mm,:], pi_old[mm,:]))
-        a_prior += np.sum(sc.dirichlet.logpdf(pi_new[mm,:], alpha/n_channel)) - np.sum(sc.dirichlet.logpdf(pi_old[mm,:], alpha/n_channel))
+        a_prop += np.sum(sc.dirichlet.logpdf(pi_old[mm, :], pi_new[mm, :])) - np.sum(
+            sc.dirichlet.logpdf(pi_new[mm, :], pi_old[mm, :])
+        )
+        a_prior += np.sum(
+            sc.dirichlet.logpdf(pi_new[mm, :], alpha / n_channel)
+        ) - np.sum(sc.dirichlet.logpdf(pi_old[mm, :], alpha / n_channel))
 
     a = (a_top - a_bottom) + a_prop + a_prior
     if a > np.log(np.random.rand()):

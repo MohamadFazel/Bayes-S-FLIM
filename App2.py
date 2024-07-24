@@ -10,6 +10,8 @@ from PyQt5.QtWidgets import QFileDialog, QVBoxLayout
 import matplotlib.pylab as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 import time
+
+
 # plt.style.use('seaborn-v0_8-dark-palette')
 # print(plt.style.available)
 class MainWindow(QtWidgets.QMainWindow):
@@ -20,11 +22,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.save_path = ""
         self.img_size = (128, 128)
         self.slice_params = slice(54, 118, None), slice(0, 64, None)
-        
-        self.ui = uic.loadUi('ui/app.ui', self)
+
+        self.ui = uic.loadUi("ui/app.ui", self)
         # Ensure galleryWidget has a layout set
         if self.galleryWidget.layout() is None:
-            self.galleryWidget.setLayout(QVBoxLayout())  # Assuming a QVBoxLayout, change as needed
+            self.galleryWidget.setLayout(
+                QVBoxLayout()
+            )  # Assuming a QVBoxLayout, change as needed
         self.analysis_run = False
         self.ui.load_data.clicked.connect(self.browseFile)
         self.ui.save_path.clicked.connect(self.browseSavePath)
@@ -40,12 +44,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.figure, self.ax = plt.subplots()
         self.canvas = FigureCanvas(self.figure)
         self.galleryWidget.layout().addWidget(self.canvas)
-        
-        # Call a function to update the plot
-        
 
+        # Call a function to update the plot
 
         # self.ui.num_species.setText(str(128),str(128))
+
     def browseFile(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
@@ -55,15 +58,16 @@ class MainWindow(QtWidgets.QMainWindow):
         if file_dialog.exec_():
             self.file_path = file_dialog.selectedFiles()[0]
             self.file_data = sio.loadmat(self.file_path)
-            #Extract time-related information
-            self.time_data = np.squeeze(self.file_data["Dt"]).reshape(128,128)
+            # Extract time-related information
+            self.time_data = np.squeeze(self.file_data["Dt"]).reshape(128, 128)
             self.time_data = self.time_data[self.slice_params]
             dummy_size = self.time_data.shape[1]
             self.time_values = self.time_data.reshape(-1)
-            photon_count = [len(self.time_values[i]) for i in range(len(self.time_values))]
+            photon_count = [
+                len(self.time_values[i]) for i in range(len(self.time_values))
+            ]
             photon_count = np.array(photon_count).reshape(-1, dummy_size)
             self.update_plot(photon_count)
-
 
     def browseSavePath(self):
         options = QFileDialog.Options()
@@ -84,10 +88,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.sig_irf = self.ui.sig_irf.text()
         self.num_species = self.ui.num_iter.text()
         self.n_iter = self.ui.num_iter.text()  # Corrected the variable name
-        self.img_size = tuple(map(int, self.ui.img_size.text().strip('()').split(',')))
+        self.img_size = tuple(map(int, self.ui.img_size.text().strip("()").split(",")))
         # Extract wavelength-related in formation
         wavelength_data = self.file_data["Lambda"]
-        wavelength_data = wavelength_data.reshape(-1, self.img_size[0], wavelength_data.shape[1])
+        wavelength_data = wavelength_data.reshape(
+            -1, self.img_size[0], wavelength_data.shape[1]
+        )
         wavelength_data = wavelength_data[self.slice_params]
         self.wavelength_values = wavelength_data.reshape(-1, wavelength_data.shape[2])
         self.pi, self.photon_int, self.eta, self.bg = run_sflim_sampler(
@@ -97,22 +103,22 @@ class MainWindow(QtWidgets.QMainWindow):
             self.sig_irf,
             self.t_inter_pulse,
             self.n_iter,  # Assuming NIter corresponds to the number of iterations
-            self.num_species
+            self.num_species,
         )
         self.analysis_run = True
         self.ui.messege.setStyleSheet("color: green;")
         self.ui.messege.setText(str("Analysis Is Done"))
 
-
     def update_plot(self, img_data):
         # Your Matplotlib plotting code here
-        self.ax.imshow(img_data, cmap='gray')
+        self.ax.imshow(img_data, cmap="gray")
         self.canvas.draw()
+
 
 app = QtWidgets.QApplication(sys.argv)
 mainWindow = MainWindow()
 
-apply_stylesheet(app, 'dark_amber.xml')
+apply_stylesheet(app, "dark_amber.xml")
 
 mainWindow.show()
 sys.exit(app.exec_())
