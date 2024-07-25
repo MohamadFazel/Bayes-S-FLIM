@@ -1,9 +1,9 @@
 import numpy as np
 import cupy as cp
-from src.ratio import *
-from src.intensity import *
-from src.liftim import *
-from src.background import *
+from ratio import *
+from intensity import *
+from liftim import *
+from background import *
 from datetime import datetime
 
 
