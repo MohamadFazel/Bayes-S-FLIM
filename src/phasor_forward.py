@@ -5,9 +5,9 @@ import scipy.io
 
 # _______________________________________________________________________________-
 n_pix = 1
-n_pulse = 10e5
+n_pulse = 1e5
 t_inter_p = 12.8
-lifetimes = np.array([1.7, 3.5, 5])
+lifetimes = np.array([1.6, 3.5, 5])
 spec_ind = np.array([1, 2, 3])
 exc_probs = np.random.rand(1, 3)
 tau_irf = 12.8
@@ -27,6 +27,13 @@ dt, lambda_, s, mu, sigma, spec_dt = gen_data(
     0,
 )
 
+with open("./params.txt", "w") as file:
+    file.write(
+        f"n_pix = {n_pix},\n n_pulse = {n_pulse},\n t_inter_p = {t_inter_p},\n lifetimes = {lifetimes},\n tau_irf = {tau_irf},\n sig_irf = {sig_irf},\n mu = {mu},\n sigma = {sigma}"
+    )
+
+np.save("dt_.npy", dt)
+np.save("lambda_", lambda_)
 x, y = spec_dt[0][0], spec_dt[0][1]
 
 spectral_channels = [[] for _ in range(32)]
@@ -35,7 +42,9 @@ for i in range(len(y)):
     it = int(y[i])
     spectral_channels[it].append(x[i])
 
-scipy.io.savemat("spectral_channels.mat", {"spectral_channels": spectral_channels})
+scipy.io.savemat(
+    "arrival_time_in_spectral_channels.mat", {"spectral_channels": spectral_channels}
+)
 # Define the number of bins and the range
 num_bins = 255
 range_bins = (0, t_inter_p)
