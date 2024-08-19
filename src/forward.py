@@ -55,7 +55,7 @@ def gen_data(
     exc_probs = exc_probs / total_exc_prob[:, None]
     spec_dt = []
     for pp in range(n_pix):
-
+        specdt_pp = []
         pulse_excitation = 1 - np.exp(-2 * sig_irf * total_exc_prob[pp])
         pulse_excitation = pulse_excitation > np.random.rand(n_pulse)
 
@@ -81,5 +81,6 @@ def gen_data(
         lambda_[pp] += np.bincount(tmp_id, minlength=32)
         s.append(exc_species_indices)
         dt.append(arrival_times)
-        spec_dt.append((arrival_times, tmp_id))
+        specdt_pp.append((arrival_times, tmp_id))
+        spec_dt.append(specdt_pp)
     return dt, lambda_, s, mu, sigma, spec_dt

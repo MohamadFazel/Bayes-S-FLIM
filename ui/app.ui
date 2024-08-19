@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1046</width>
-    <height>797</height>
+    <width>849</width>
+    <height>567</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,305 +17,197 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,5">
-    <property name="leftMargin">
-     <number>12</number>
+   <widget class="QToolBox" name="toolBox">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>10</y>
+      <width>381</width>
+      <height>231</height>
+     </rect>
     </property>
-    <property name="topMargin">
-     <number>8</number>
+    <property name="styleSheet">
+     <string notr="true">    QToolBox {
+        background-color: #f5f5f5; /* Light gray background for the toolbox */
+        border: 1px solid #dcdcdc; /* Subtle border for separation */
+        border-radius: 4px; /* Slight rounding for a modern look */
+    }
+    
+    QToolBox::tab {
+        background-color: #ffffff; /* White background for tabs */
+        color: #333333; /* Dark gray text for high readability */
+        font-size: 12px; /* Standard text size for tabs */
+        padding: 5px; /* Padding around the text in tabs */
+        border: 1px solid #dcdcdc; /* Border around tabs for definition */
+        border-bottom: none; /* No border at the bottom to blend with the content area */
+        border-radius: 4px 4px 0 0; /* Rounded top corners for tabs */
+    }
+    
+    QToolBox::tab:selected {
+        background-color: #e0e0e0; /* Slightly darker gray for the selected tab */
+        color: #000000; /* Black text for selected tab for clear visibility */
+        border: 1px solid #b0b0b0; /* Darker border for the selected tab */
+        border-bottom: 1px solid #ffffff; /* No border line between tab and content area */
+    }
+    
+    QToolBox::tab:!selected {
+        background-color: #f5f5f5; /* Light gray for unselected tabs */
+        color: #666666; /* Medium gray text for unselected tabs */
+    }
+    
+    QToolBox QStackedWidget {
+        padding: 10px; /* Padding inside the content area */
+    }font: oblique 10pt &quot;Sans Serif&quot;;</string>
     </property>
-    <property name="rightMargin">
-     <number>12</number>
+    <property name="frameShape">
+     <enum>QFrame::Panel</enum>
     </property>
-    <property name="bottomMargin">
-     <number>8</number>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
     </property>
-    <item>
-     <widget class="QFrame" name="frame">
-      <property name="frameShape">
-       <enum>QFrame::Box</enum>
+    <widget class="QWidget" name="toolBoxPage1_4">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>379</width>
+       <height>197</height>
+      </rect>
+     </property>
+     <attribute name="label">
+      <string>Exp Params</string>
+     </attribute>
+     <widget class="QWidget" name="layoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>30</y>
+        <width>321</width>
+        <height>111</height>
+       </rect>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout">
-       <item>
-        <widget class="QPushButton" name="load_data">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Load Data</string>
-         </property>
-        </widget>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="2" column="2">
+        <widget class="QLineEdit" name="irf_sigma"/>
        </item>
-       <item>
-        <widget class="QPushButton" name="save_path">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Save dir</string>
-         </property>
-         <property name="iconSize">
-          <size>
-           <width>32</width>
-           <height>16</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Inter Pusle time:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="intepulse_time"/>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_4">
-         <property name="font">
-          <font>
-           <family>Noto Sans</family>
-           <weight>75</weight>
-           <italic>false</italic>
-           <bold>true</bold>
-           <underline>false</underline>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="text">
-          <string>Number o species:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="num_species"/>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_2">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>IRF Offset:</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="tau_irf"/>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>IRF sigma</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="sig_irf"/>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_5">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Iteration Number</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="num_iter"/>
-       </item>
-       <item>
-        <widget class="QLabel" name="label_6">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Image Size</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLineEdit" name="img_size"/>
-       </item>
-       <item>
-        <widget class="QPushButton" name="run_analy">
-         <property name="font">
-          <font>
-           <pointsize>13</pointsize>
-           <weight>75</weight>
-           <italic>false</italic>
-           <bold>true</bold>
-           <underline>false</underline>
-          </font>
-         </property>
-         <property name="mouseTracking">
-          <bool>false</bool>
-         </property>
-         <property name="autoFillBackground">
-          <bool>false</bool>
-         </property>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_9">
          <property name="styleSheet">
-          <string notr="true">selection-color: rgb(255, 255, 227);</string>
+          <string notr="true">    QLabel {
+        color: #000000; /* Black text for maximum readability */
+        font-size: 14px; /* Standard text size for clarity */
+        font-family: 'Arial', 'Helvetica', 'sans-serif'; /* Clean, readable fonts */
+        padding: 2px; /* Minimal padding for a tidy appearance */
+        background-color: transparent; /* No background color to keep it clean */
+    }
+    QLabel.heading {
+        font-size: 16px; /* Larger size for headings to stand out */
+        font-weight: bold; /* Bold for emphasis */
+        color: #1a1a1a; /* Very dark gray, slightly softer than black */
+    }
+    QLabel.subheading {
+        font-size: 14px; /* Medium size for subheadings */
+        font-weight: normal; /* Regular weight for a less prominent look */
+        color: #4d4d4d; /* Dark gray for contrast without harshness */
+    }
+    QLabel.error {
+        font-size: 12px; /* Standard size for error messages */
+        font-weight: bold; /* Bold to highlight errors */
+        color: #cc0000; /* Strong red color for clear visibility */
+    }
+    QLabel.success {
+        font-size: 12px; /* Standard size for success messages */
+        font-weight: bold; /* Bold to emphasize success */
+        color: #009900; /* Strong green for a positive outcome */
+    }
+</string>
          </property>
          <property name="text">
-          <string>Run Analysis</string>
+          <string>IRF mean (ns)</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item>
-        <widget class="QLabel" name="messege">
-         <property name="font">
-          <font>
-           <pointsize>16</pointsize>
-           <weight>75</weight>
-           <italic>false</italic>
-           <bold>true</bold>
-           <underline>false</underline>
-           <strikeout>false</strikeout>
-          </font>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::Box</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <property name="lineWidth">
-          <number>1</number>
-         </property>
-         <property name="midLineWidth">
-          <number>2</number>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="textFormat">
-          <enum>Qt::AutoText</enum>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QFrame" name="galleryTopFrame">
-      <property name="frameShape">
-       <enum>QFrame::Box</enum>
-      </property>
-      <layout class="QGridLayout" name="gridLayout_3" rowstretch="1,0,0">
-       <item row="2" column="1">
-        <widget class="QPushButton" name="pushButton">
-         <property name="text">
-          <string>Preview</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3">
-        <spacer name="horizontalSpacer_4">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="2" column="0">
-        <spacer name="horizontalSpacer">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="0" column="1" colspan="2">
-        <widget class="QComboBox" name="comboBox">
-         <item>
-          <property name="text">
-           <string>Lifetime Histogram</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Images</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Spectrum</string>
-          </property>
-         </item>
         </widget>
        </item>
        <item row="0" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="styleSheet">
+          <string notr="true">    QLabel {
+        color: #000000; /* Black text for maximum readability */
+        font-size: 14px; /* Standard text size for clarity */
+        font-family: 'Arial', 'Helvetica', 'sans-serif'; /* Clean, readable fonts */
+        padding: 2px; /* Minimal padding for a tidy appearance */
+        background-color: transparent; /* No background color to keep it clean */
+    }
+    QLabel.heading {
+        font-size: 16px; /* Larger size for headings to stand out */
+        font-weight: bold; /* Bold for emphasis */
+        color: #1a1a1a; /* Very dark gray, slightly softer than black */
+    }
+    QLabel.subheading {
+        font-size: 14px; /* Medium size for subheadings */
+        font-weight: normal; /* Regular weight for a less prominent look */
+        color: #4d4d4d; /* Dark gray for contrast without harshness */
+    }
+    QLabel.error {
+        font-size: 12px; /* Standard size for error messages */
+        font-weight: bold; /* Bold to highlight errors */
+        color: #cc0000; /* Strong red color for clear visibility */
+    }
+    QLabel.success {
+        font-size: 12px; /* Standard size for success messages */
+        font-weight: bold; /* Bold to emphasize success */
+        color: #009900; /* Strong green for a positive outcome */
+    }
+</string>
+         </property>
+         <property name="text">
+          <string>interpulse time (ns)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="irf_tau"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_11">
+         <property name="styleSheet">
+          <string notr="true">    QLabel {
+        color: #000000; /* Black text for maximum readability */
+        font-size: 14px; /* Standard text size for clarity */
+        font-family: 'Arial', 'Helvetica', 'sans-serif'; /* Clean, readable fonts */
+        padding: 2px; /* Minimal padding for a tidy appearance */
+        background-color: transparent; /* No background color to keep it clean */
+    }
+    QLabel.heading {
+        font-size: 16px; /* Larger size for headings to stand out */
+        font-weight: bold; /* Bold for emphasis */
+        color: #1a1a1a; /* Very dark gray, slightly softer than black */
+    }
+    QLabel.subheading {
+        font-size: 14px; /* Medium size for subheadings */
+        font-weight: normal; /* Regular weight for a less prominent look */
+        color: #4d4d4d; /* Dark gray for contrast without harshness */
+    }
+    QLabel.error {
+        font-size: 12px; /* Standard size for error messages */
+        font-weight: bold; /* Bold to highlight errors */
+        color: #cc0000; /* Strong red color for clear visibility */
+    }
+    QLabel.success {
+        font-size: 12px; /* Standard size for success messages */
+        font-weight: bold; /* Bold to emphasize success */
+        color: #009900; /* Strong green for a positive outcome */
+    }
+</string>
+         </property>
+         <property name="text">
+          <string>IRF sigma (ns)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLineEdit" name="t_inter_p"/>
+       </item>
+       <item row="1" column="1">
         <spacer name="horizontalSpacer_3">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -328,35 +220,630 @@
          </property>
         </spacer>
        </item>
-       <item row="1" column="0" colspan="4">
-        <widget class="QWidget" name="galleryWidget" native="true"/>
-       </item>
-       <item row="2" column="2">
-        <widget class="QPushButton" name="pushButton_2">
-         <property name="text">
-          <string>Next</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <spacer name="horizontalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
       </layout>
      </widget>
-    </item>
-   </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="layoutWidget_4">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>11</y>
+      <width>391</width>
+      <height>501</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QToolBox" name="toolBox_4">
+       <property name="styleSheet">
+        <string notr="true">    QToolBox {
+        background-color: #f5f5f5; /* Light gray background for the toolbox */
+        border: 1px solid #dcdcdc; /* Subtle border for separation */
+        border-radius: 4px; /* Slight rounding for a modern look */
+    }
+    
+    QToolBox::tab {
+        background-color: #ffffff; /* White background for tabs */
+        color: #333333; /* Dark gray text for high readability */
+        font-size: 12px; /* Standard text size for tabs */
+        padding: 5px; /* Padding around the text in tabs */
+        border: 1px solid #dcdcdc; /* Border around tabs for definition */
+        border-bottom: none; /* No border at the bottom to blend with the content area */
+        border-radius: 4px 4px 0 0; /* Rounded top corners for tabs */
+    }
+    
+    QToolBox::tab:selected {
+        background-color: #e0e0e0; /* Slightly darker gray for the selected tab */
+        color: #000000; /* Black text for selected tab for clear visibility */
+        border: 1px solid #b0b0b0; /* Darker border for the selected tab */
+        border-bottom: 1px solid #ffffff; /* No border line between tab and content area */
+    }
+    
+    QToolBox::tab:!selected {
+        background-color: #f5f5f5; /* Light gray for unselected tabs */
+        color: #666666; /* Medium gray text for unselected tabs */
+    }
+    
+    QToolBox QStackedWidget {
+        padding: 10px; /* Padding inside the content area */
+    }</string>
+       </property>
+       <widget class="QWidget" name="toolBoxPage1_5">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>387</width>
+          <height>200</height>
+         </rect>
+        </property>
+        <attribute name="label">
+         <string>Method Params</string>
+        </attribute>
+        <widget class="QWidget" name="">
+         <property name="geometry">
+          <rect>
+           <x>31</x>
+           <y>48</y>
+           <width>331</width>
+           <height>92</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="2" column="2">
+           <widget class="QLineEdit" name="num_iter">
+            <property name="text">
+             <string/>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_14">
+            <property name="styleSheet">
+             <string notr="true">    QLabel {
+        color: #000000; /* Black text for maximum readability */
+        font-size: 14px; /* Standard text size for clarity */
+        font-family: 'Arial', 'Helvetica', 'sans-serif'; /* Clean, readable fonts */
+        padding: 2px; /* Minimal padding for a tidy appearance */
+        background-color: transparent; /* No background color to keep it clean */
+    }
+    QLabel.heading {
+        font-size: 16px; /* Larger size for headings to stand out */
+        font-weight: bold; /* Bold for emphasis */
+        color: #1a1a1a; /* Very dark gray, slightly softer than black */
+    }
+    QLabel.subheading {
+        font-size: 14px; /* Medium size for subheadings */
+        font-weight: normal; /* Regular weight for a less prominent look */
+        color: #4d4d4d; /* Dark gray for contrast without harshness */
+    }
+    QLabel.error {
+        font-size: 12px; /* Standard size for error messages */
+        font-weight: bold; /* Bold to highlight errors */
+        color: #cc0000; /* Strong red color for clear visibility */
+    }
+    QLabel.success {
+        font-size: 12px; /* Standard size for success messages */
+        font-weight: bold; /* Bold to emphasize success */
+        color: #009900; /* Strong green for a positive outcome */
+    }
+</string>
+            </property>
+            <property name="text">
+             <string>Image size</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_17">
+            <property name="styleSheet">
+             <string notr="true">    QLabel {
+        color: #000000; /* Black text for maximum readability */
+        font-size: 14px; /* Standard text size for clarity */
+        font-family: 'Arial', 'Helvetica', 'sans-serif'; /* Clean, readable fonts */
+        padding: 2px; /* Minimal padding for a tidy appearance */
+        background-color: transparent; /* No background color to keep it clean */
+    }
+    QLabel.heading {
+        font-size: 16px; /* Larger size for headings to stand out */
+        font-weight: bold; /* Bold for emphasis */
+        color: #1a1a1a; /* Very dark gray, slightly softer than black */
+    }
+    QLabel.subheading {
+        font-size: 14px; /* Medium size for subheadings */
+        font-weight: normal; /* Regular weight for a less prominent look */
+        color: #4d4d4d; /* Dark gray for contrast without harshness */
+    }
+    QLabel.error {
+        font-size: 12px; /* Standard size for error messages */
+        font-weight: bold; /* Bold to highlight errors */
+        color: #cc0000; /* Strong red color for clear visibility */
+    }
+    QLabel.success {
+        font-size: 12px; /* Standard size for success messages */
+        font-weight: bold; /* Bold to emphasize success */
+        color: #009900; /* Strong green for a positive outcome */
+    }
+</string>
+            </property>
+            <property name="text">
+             <string>Iterations</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLineEdit" name="num_species"/>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLineEdit" name="img_size"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_12">
+            <property name="styleSheet">
+             <string notr="true">    QLabel {
+        color: #000000; /* Black text for maximum readability */
+        font-size: 14px; /* Standard text size for clarity */
+        font-family: 'Arial', 'Helvetica', 'sans-serif'; /* Clean, readable fonts */
+        padding: 2px; /* Minimal padding for a tidy appearance */
+        background-color: transparent; /* No background color to keep it clean */
+    }
+    QLabel.heading {
+        font-size: 16px; /* Larger size for headings to stand out */
+        font-weight: bold; /* Bold for emphasis */
+        color: #1a1a1a; /* Very dark gray, slightly softer than black */
+    }
+    QLabel.subheading {
+        font-size: 14px; /* Medium size for subheadings */
+        font-weight: normal; /* Regular weight for a less prominent look */
+        color: #4d4d4d; /* Dark gray for contrast without harshness */
+    }
+    QLabel.error {
+        font-size: 12px; /* Standard size for error messages */
+        font-weight: bold; /* Bold to highlight errors */
+        color: #cc0000; /* Strong red color for clear visibility */
+    }
+    QLabel.success {
+        font-size: 12px; /* Standard size for success messages */
+        font-weight: bold; /* Bold to emphasize success */
+        color: #009900; /* Strong green for a positive outcome */
+    }
+</string>
+            </property>
+            <property name="text">
+             <string>Number of Species</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <spacer name="horizontalSpacer">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Minimum</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>13</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QToolBox" name="toolBox_5">
+       <property name="styleSheet">
+        <string notr="true">    QToolBox {
+        background-color: #f5f5f5; /* Light gray background for the toolbox */
+        border: 1px solid #dcdcdc; /* Subtle border for separation */
+        border-radius: 4px; /* Slight rounding for a modern look */
+    }
+    
+    QToolBox::tab {
+        background-color: #ffffff; /* White background for tabs */
+        color: #333333; /* Dark gray text for high readability */
+        font-size: 12px; /* Standard text size for tabs */
+        padding: 5px; /* Padding around the text in tabs */
+        border: 1px solid #dcdcdc; /* Border around tabs for definition */
+        border-bottom: none; /* No border at the bottom to blend with the content area */
+        border-radius: 4px 4px 0 0; /* Rounded top corners for tabs */
+    }
+    
+    QToolBox::tab:selected {
+        background-color: #e0e0e0; /* Slightly darker gray for the selected tab */
+        color: #000000; /* Black text for selected tab for clear visibility */
+        border: 1px solid #b0b0b0; /* Darker border for the selected tab */
+        border-bottom: 1px solid #ffffff; /* No border line between tab and content area */
+    }
+    
+    QToolBox::tab:!selected {
+        background-color: #f5f5f5; /* Light gray for unselected tabs */
+        color: #666666; /* Medium gray text for unselected tabs */
+    }
+    
+    QToolBox QStackedWidget {
+        padding: 10px; /* Padding inside the content area */
+    }font: oblique 10pt &quot;Sans Serif&quot;;</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <widget class="QWidget" name="toolBoxPage1_6">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>387</width>
+          <height>199</height>
+         </rect>
+        </property>
+        <attribute name="label">
+         <string>Results</string>
+        </attribute>
+        <widget class="QPushButton" name="plot_">
+         <property name="geometry">
+          <rect>
+           <x>130</x>
+           <y>80</y>
+           <width>121</width>
+           <height>41</height>
+          </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">    QPushButton {
+        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #a1c4fd, stop:1 #c2e9fb);
+        color: rgb(2, 10, 117);
+        border-radius: 10px;
+        padding: 10px 20px;
+        border: 2px solid #5a8ee0;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    QPushButton:hover {
+        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #85d7ff, stop:1 #a1e6fd);
+    }
+    QPushButton:pressed {
+        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #5ca9f7, stop:1 #84d1f7);
+    }
+</string>
+         </property>
+         <property name="text">
+          <string>PLOT</string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>../../../../../Downloads/pngegg.png</normaloff>../../../../../Downloads/pngegg.png</iconset>
+         </property>
+        </widget>
+        <widget class="QPushButton" name="save_results">
+         <property name="geometry">
+          <rect>
+           <x>90</x>
+           <y>140</y>
+           <width>211</width>
+           <height>41</height>
+          </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">    QPushButton {
+        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #fdd835, stop:1 #fbc02d);
+        color: rgb(38, 25, 0);
+        border-radius: 10px;
+        padding: 10px 20px;
+        border: 2px solid #f9a825;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    QPushButton:hover {
+        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #ffeb3b, stop:1 #fdd835);
+    }
+    QPushButton:pressed {
+        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #fbc02d, stop:1 #f9a825);
+    }
+</string>
+         </property>
+         <property name="text">
+          <string>Export Chain</string>
+         </property>
+         <property name="icon">
+          <iconset>
+           <normaloff>../../../../../Downloads/kisspng-computer-icons-export-clip-art-5b19349dcb5f64.189638811528378525833.png</normaloff>../../../../../Downloads/kisspng-computer-icons-export-clip-art-5b19349dcb5f64.189638811528378525833.png</iconset>
+         </property>
+        </widget>
+        <widget class="QComboBox" name="combo_plot">
+         <property name="geometry">
+          <rect>
+           <x>30</x>
+           <y>20</y>
+           <width>161</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true"/>
+         </property>
+         <item>
+          <property name="text">
+           <string>Spectra</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Lifetimes Histogram</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Maps</string>
+          </property>
+         </item>
+        </widget>
+        <widget class="QCheckBox" name="save_check">
+         <property name="geometry">
+          <rect>
+           <x>230</x>
+           <y>20</y>
+           <width>91</width>
+           <height>31</height>
+          </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">    QCheckBox {
+        spacing: 5px; /* Space between the checkbox and the text */
+        font-size: 12px; /* Smaller font size */
+        color: #000000; /* Dark text color for high contrast */
+    }
+    QCheckBox::indicator {
+        width: 16px; /* Slightly larger for better visibility */
+        height: 16px;
+        border: 2px solid #000000; /* Black border for high contrast */
+        border-radius: 4px; /* Slightly rounded corners */
+        background-color: #ffffff; /* White background for high visibility */
+    }
+    QCheckBox::indicator:checked {
+        background-color: #000000; /* Black background when checked */
+        border: 2px solid #000000; /* Matching border color */
+    }
+    QCheckBox::indicator:checked::after {
+        content: &quot;&quot;; /* Add checkmark icon */
+        width: 8px;
+        height: 8px;
+        border: solid white; /* White checkmark for visibility */
+        border-width: 0 2px 2px 0; /* Shape of the checkmark */
+        display: block;
+        transform: rotate(45deg);
+        position: relative;
+        top: 2px;
+        left: 4px;
+    }
+    QCheckBox::indicator:hover {
+        border: 2px solid #333333; /* Darker border on hover */
+    }</string>
+         </property>
+         <property name="text">
+          <string>save_plots</string>
+         </property>
+        </widget>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QFrame" name="frame">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>270</y>
+      <width>381</width>
+      <height>241</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">    QLabel {
+        font-family: 'Roboto', 'Arial', sans-serif; /* Clean, modern sans-serif font */
+        font-size: 12px; /* Standard size for body text */
+        color: #333333; /* Dark gray text for readability */
+        line-height: 1.5; /* Ensures good readability */
+    }
+    
+    QLabel.heading {
+        font-size: 22px; /* Larger size for main headings */
+        font-weight: bold; /* Bold for emphasis */
+        color: #000000; /* Black for strong emphasis */
+    }
+    
+    QLabel.subheading {
+        font-size: 16px; /* Medium size for subheadings */
+        font-weight: semi-bold; /* Slightly less bold than headings */
+        color: #4A4A4A; /* Dark gray for distinction */
+    }
+    
+    QLabel.label {
+        font-size: 10px; /* Smaller size for labels */
+        font-weight: regular; /* Regular weight for clarity */
+        color: #666666; /* Medium gray for subtlety */
+    }
+</string>
+    </property>
+    <property name="frameShape">
+     <enum>QFrame::WinPanel</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Raised</enum>
+    </property>
+    <widget class="QPushButton" name="run_">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>100</y>
+       <width>141</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>121</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">QPushButton {
+    border: 2px solid green;;
+    border-radius: 30px;
+	font: 14pt &quot;Sans Serif&quot;;
+    border-style: outset; 
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, 	stop:0 #d4fc79, stop:1 #96e6a1);
+     color: green;
+     padding: 10px 20px;
+	font-weight: bold;
+
+    }
+
+QPushButton:hover {
+            background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #c9f7f0, stop:1 #a4e5d9);
+
+    }
+
+QPushButton:pressed {
+    border-style: inset;
+            background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #b0f0cf, stop:1 #88dcb1);
+
+    }</string>
+     </property>
+     <property name="text">
+      <string>Run</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../../../../../Pictures/start.png</normaloff>../../../../../Pictures/start.png</iconset>
+     </property>
+     <property name="autoRepeatDelay">
+      <number>300</number>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="load_data">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>30</y>
+       <width>231</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">    QPushButton {
+        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #fbc2eb, stop:1 #a18cd1);
+        color: rgb(50, 0, 75);
+        border-radius: 10px;
+        padding: 10px 20px;
+        border: 2px solid #d183c9;
+        font-size: 11px;
+        font-weight: bold;
+    }
+    QPushButton:hover {
+        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #f9a3da, stop:1 #9586c7);
+    }
+    QPushButton:pressed {
+        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #f285b7, stop:1 #8469b0);
+    }
+</string>
+     </property>
+     <property name="text">
+      <string>Load Data</string>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>../../../../../Downloads/cloud-data-upload-icon.png</normaloff>../../../../../Downloads/cloud-data-upload-icon.png</iconset>
+     </property>
+    </widget>
+    <widget class="QProgressBar" name="progressBar">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>190</y>
+       <width>301</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">    QProgressBar {
+	font: 200 italic 11pt &quot;Ubuntu Sans&quot;;
+        border: 2px solid #8f8f91;
+        border-radius: 5px;
+        text-align: center;
+        background-color: #f3f3f3;
+    }
+
+    QProgressBar::chunk {
+        background-color: #5cb85c; /* Base green color */
+        border-radius: 5px;
+        background: qlineargradient(
+            x1: 0, y1: 0, x2: 1, y2: 0,
+            stop: 0 #5cb85c,
+            stop: 0.4 #6fdc6f,  /* Lighter green color */
+            stop: 0.6 #6fdc6f,  /* Lighter green color */
+            stop: 1 #5cb85c
+        );
+        animation: move_light 2s linear infinite;
+    }
+
+    @keyframes move_light {
+        0% { background-position: 0% 0; }
+        100% { background-position: 100% 0; }
+    }
+</string>
+     </property>
+     <property name="value">
+      <number>24</number>
+     </property>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>849</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="Settings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="HyperParameters_"/>
+   </widget>
+   <addaction name="Settings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="HyperParameters_">
+   <property name="text">
+    <string>HyperParameters</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
