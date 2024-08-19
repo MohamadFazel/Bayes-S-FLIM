@@ -1,15 +1,118 @@
+import pickle
 import sys
 import PyQt6.QtWidgets as qt
 from PyQt6 import uic
 from PyQt6.QtCore import pyqtSignal
 import numpy as np
-import numpy as cp
+import cupy as cp
 from datetime import datetime
+from matplotlib import cm
 
 # from cupyx.scipy import special
 from scipy import special
 import scipy.stats as sc
-from scipy.io import loadmat
+from scipy.io import loadmat, savemat
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+
+
+class PlotWindow(qt.QWidget):
+    def __init__(self, eta, photon_int, pi, select_plot, nsb, img_sz, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Plot Results")
+
+        self.eta = eta
+        self.photon_int = photon_int
+        self.pi = pi
+        self.select_plot = select_plot
+        self.nsb = nsb
+        self.img_sz = img_sz
+
+        # Create a layout for the plot
+        layout = qt.QVBoxLayout()
+        self.setLayout(layout)
+
+        # Create a Matplotlib figure and canvas
+        self.figure = plt.figure()
+        self.canvas = FigureCanvas(self.figure)
+        layout.addWidget(self.canvas)
+
+        # Define a colormap
+        self.colors = [
+            "red",
+            "blue",
+            "green",
+            "orange",
+            "purple",
+            "black",
+            "magenta",
+            "yellow",
+            "brown",
+            "pink",
+        ]
+        self.cmaps = [
+            "Reds",
+            "Blues",
+            "Greens",
+            "Oranges",
+            "Purples",
+            "Greys",
+            "spring",
+            "Wistia",
+            "copper",
+            "cool",
+        ]
+
+        # Plot the data
+        self.plot_results()
+
+    def plot_results(self):
+        self.figure.clear()
+        if self.select_plot == "Spectra":
+            ax = self.figure.add_subplot(1, 1, 1)
+            pin = np.mean(self.pi[-20000:, :, :], axis=0)
+            x = np.linspace(375, 760, self.nsb)
+            for ii in range(pin.shape[0]):
+                color = self.colors[ii % len(self.colors)]
+                plt.plot(
+                    x, pin[ii] / np.sum(pin[ii]), color=color, label=f"Species #{ii+1}"
+                )
+            ax.set_title(f"Species Spectra")
+            ax.set_xlabel("Wavelength (nm)")
+            ax.set_ylabel("Distribution")
+            ax.legend()
+            self.canvas.draw()
+        elif self.select_plot == "Lifetime Histogram":
+            color = self.colors[ii % len(self.colors)]
+            ax = self.figure.add_subplot(1, 1, 1)
+            for ii in range(self.eta.shape[0]):
+                plt.hist(
+                    1 / self.eta[-20000:, ii],
+                    bins=100,
+                    color=color,
+                    label=f"Species #{ii+1}",
+                    density=True,
+                )
+            ax.set_title(f"Lifetimes Histogram")
+            ax.set_xlabel("Lifetime (ns)")
+            ax.set_ylabel("Distribution")
+            ax.legend()
+            self.canvas.draw()
+        elif self.select_plot == "Maps":
+            phi = np.mean(self.photon_int[-20000:, :, :], axis=0)
+            phi = phi.reshape(phi.shape[0], -1, self.img_sz)
+
+            num_images = phi.shape[0]
+            cols = 3  # Number of columns
+            rows = (num_images // cols) + int(num_images % cols != 0)
+            for ii in range(phi.shape[0]):
+                cmap = self.cmaps[ii % len(self.cmaps)]
+                ax = self.figure.add_subplot(rows, cols, ii + 1)
+                plt.imshow(phi[ii], cmap=cmap)
+                ax.set_title(f"Species #{ii + 1}")
+                ax.axis("off")
+            self.figure.suptitle("Maps")
+            self.canvas.draw()
 
 
 class HyperparametersWindow(qt.QWidget):
@@ -18,7 +121,7 @@ class HyperparametersWindow(qt.QWidget):
     def __init__(self):
         super().__init__()
         uic.loadUi("ui/hyperr.ui", self)
-
+        self.setWindowTitle("Hyperparameters")
         self.alpha_prop_life = self.findChild(qt.QLineEdit, "alpha_prop_life")
         self.alpha_prior_life = self.findChild(qt.QLineEdit, "alpha_prior_life")
         self.beta_prior_life = self.findChild(qt.QLineEdit, "beta_prior_life")
@@ -62,15 +165,24 @@ class HyperparametersWindow(qt.QWidget):
 
 
 class MainWindow(qt.QMainWindow):
+
     def __init__(self):
         super().__init__()
         self.file_path = ""
         self.ui = uic.loadUi("ui/app.ui", self)
+        self.setWindowTitle("Spectral FLIM Analysis")
         self.ui.progressBar.setVisible(False)
         self.ui.load_data.clicked.connect(self.browseFile)
         self.ui.run_.clicked.connect(self.runAnalysis)
         self.ui.HyperParameters_.triggered.connect(self.openHyperparameters)
+        # Assuming you have a button in your UI named 'plot_button'
+        self.ui.plot_.clicked.connect(self.show_plot)
+        self.ui.plot_.setEnabled(False)
 
+        self.ui.save_results.clicked.connect(self.export_results)
+        self.ui.save_results.setEnabled(False)
+
+        self.analysis_results = True
         self.set_default_values()
 
     def set_default_values(self):
@@ -132,9 +244,9 @@ class MainWindow(qt.QMainWindow):
 
     def init_chain(self):
         self.n_pix = self.lambda_.shape[0]
-        nsb = self.lambda_.shape[-1]
+        self.nsb = self.lambda_.shape[-1]
         self.eta = np.zeros((self.num_iter, self.num_species))
-        self.pi = np.random.rand(self.num_iter, self.num_species, nsb)
+        self.pi = np.random.rand(self.num_iter, self.num_species, self.nsb)
         self.photon_int = np.zeros((self.num_iter, self.num_species, self.n_pix))
         self.eta[0, :] = np.random.rand(self.num_species)
         for mm in range(self.num_species):
@@ -327,8 +439,7 @@ class MainWindow(qt.QMainWindow):
         masked = masked_arr.copy()
         log_masked_arr = cp.log(masked_arr)
         log_masked_arr[masked == 0] = 0
-        # return cp.asnumpy(cp.sum(log_masked_arr, axis=1))
-        return cp.sum(log_masked_arr, axis=1)
+        return cp.asnumpy(cp.sum(log_masked_arr, axis=1))
 
     def calculate_lifetime_likelihood_gpu(self, photon_int_, eta_):
         lf_cont = photon_int_[:, :, None, None] * (
@@ -367,45 +478,95 @@ class MainWindow(qt.QMainWindow):
                 self, "Error", "Please upload data before running the analysis."
             )
         else:
-            self.get_values()
-            numeric = 4
-            self.num = cp.arange(numeric)[None, None, None, :]
-            # Find the maximum length
-            max_len = max(len(np.squeeze(x)) for x in self.dt_)
-            self.dt_padded = np.zeros((len(self.dt_), max_len))
-            mask_ = np.zeros((len(self.dt_), max_len))
-            for i, x_ in enumerate(self.dt_):
-                x = np.squeeze(x_)
-                self.dt_padded[i, : len(x)] = x
-                mask_[i, : len(x)] = 1
-            del x, x_
-            self.tiled_mask = cp.asarray(
-                np.tile(mask_[None:, :, None], (self.num_species, 1, 1, numeric))
-            )
-            self.dt_padded = cp.asarray(self.dt_padded)
-            # Sampling the parameters
-            self.accept_i = 0
-            self.accept_pi = 0
-            self.accept_eta = 0
-            self.ui.progressBar.setVisible(True)
-            self.ui.progressBar.setValue(0)
-            self.init_chain()
-            t0 = datetime.now()
-            numerator = self.num_iter - self.n_iter
-            for jj in range(1, self.num_iter):
+            self.ui.run_.setEnabled(False)
+            try:
+                self.get_values()
+                numeric = 4
+                self.num = cp.arange(numeric)[None, None, None, :]
+                # Find the maximum length
+                max_len = max(len(np.squeeze(x)) for x in self.dt_)
+                self.dt_padded = np.zeros((len(self.dt_), max_len))
+                mask_ = np.zeros((len(self.dt_), max_len))
+                for i, x_ in enumerate(self.dt_):
+                    x = np.squeeze(x_)
+                    self.dt_padded[i, : len(x)] = x
+                    mask_[i, : len(x)] = 1
+                del x, x_
+                self.tiled_mask = cp.asarray(
+                    np.tile(mask_[None:, :, None], (self.num_species, 1, 1, numeric))
+                )
+                self.dt_padded = cp.asarray(self.dt_padded)
+                # Sampling the parameters
+                self.accept_i = 0
+                self.accept_pi = 0
+                self.accept_eta = 0
+                self.ui.progressBar.setVisible(True)
+                self.ui.progressBar.setValue(0)
+                self.init_chain()
+                t0 = datetime.now()
+                numerator = self.num_iter - self.n_iter
+                for jj in range(1, self.num_iter):
 
-                self.sample_int(jj, numerator)
-                self.sample_photon_spectra(jj, numerator)
-                self.sample_lifetime(jj, numerator)
-                percentage = int((jj / self.num_iter) * 100)
+                    self.sample_int(jj, numerator)
+                    self.sample_photon_spectra(jj, numerator)
+                    self.sample_lifetime(jj, numerator)
+                    percentage = int((jj / self.num_iter) * 100)
+                    self.progressBar.setValue(percentage)
+                    qt.QApplication.processEvents()
+                percentage = 100
                 self.progressBar.setValue(percentage)
                 qt.QApplication.processEvents()
-            percentage = 100
-            self.progressBar.setValue(percentage)
-            qt.QApplication.processEvents()
 
+                qt.QMessageBox.information(
+                    self, "Analysis Complete", "The analysis has finished successfully!"
+                )
+
+                self.ui.plot_.setEnabled(True)
+                self.ui.save_results.setEnabled(True)
+            finally:
+                self.ui.run_.setEnabled(True)
+
+    def show_plot(self):
+        selected_plot = self.ui.combo_plot.currentText()
+
+        self.plot_window = PlotWindow(
+            self.eta,
+            self.photon_int,
+            self.pi,
+            selected_plot,
+            self.nsb,
+            self.ui.img_size,
+            self,
+        )
+        self.plot_window.show()
+
+    def export_results(self):
+        options = qt.QFileDialog.Option.DontUseNativeDialog
+        file_dialog = qt.QFileDialog(self)
+        file_dialog.setOptions(options)
+        filters = "MAT Files (*.mat);;Python Dictionary (*.pkl)"
+        file_name, _ = file_dialog.getSaveFileName(
+            self, "Save Results", "", filters, options=options
+        )
+        if file_name:
+            if file_name.endswith(".mat"):
+                self.save_as_mat(file_name)
+            elif file_name.endswith(".pkl"):
+                self.save_as_dict(file_name)
+
+    def save_as_mat(self, file_name):
+        data = {"eta": self.eta, "pi": self.pi, "photon_int": self.photon_int}
+        savemat(file_name, data)
         qt.QMessageBox.information(
-            self, "Analysis Complete", "The analysis has finished successfully!"
+            self, "Success", "Results saved successfully as .mat file."
+        )
+
+    def save_as_dict(self, file_name):
+        data = {"eta": self.eta, "pi": self.pi, "photon_int": self.photon_int}
+        with open(file_name, "wb") as f:
+            pickle.dump(data, f)
+        qt.QMessageBox.information(
+            self, "Success", "Results saved successfully as .pkl file."
         )
 
 
