@@ -14,13 +14,13 @@ import scipy.stats as sc
 from scipy.io import loadmat, savemat
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-
+from matplotlib.figure import Figure
 
 class PlotWindow(qt.QWidget):
     def __init__(self, eta, photon_int, pi, select_plot, nsb, img_sz, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Plot Results")
-
+        self.setMinimumSize(600, 400)
         self.eta = eta
         self.photon_int = photon_int
         self.pi = pi
@@ -33,7 +33,7 @@ class PlotWindow(qt.QWidget):
         self.setLayout(layout)
 
         # Create a Matplotlib figure and canvas
-        self.figure = plt.figure()
+        self.figure = Figure(figsize=(8, 6), dpi=100)
         self.canvas = FigureCanvas(self.figure)
         layout.addWidget(self.canvas)
 
@@ -63,7 +63,6 @@ class PlotWindow(qt.QWidget):
             "cool",
         ]
 
-        # Plot the data
         self.plot_results()
 
     def plot_results(self):
@@ -74,33 +73,32 @@ class PlotWindow(qt.QWidget):
             x = np.linspace(375, 760, self.nsb)
             for ii in range(pin.shape[0]):
                 color = self.colors[ii % len(self.colors)]
-                plt.plot(
+                ax.plot(
                     x, pin[ii] / np.sum(pin[ii]), color=color, label=f"Species #{ii+1}"
                 )
             ax.set_title(f"Species Spectra")
             ax.set_xlabel("Wavelength (nm)")
             ax.set_ylabel("Distribution")
             ax.legend()
-            self.canvas.draw()
-        elif self.select_plot == "Lifetime Histogram":
-            color = self.colors[ii % len(self.colors)]
+        elif self.select_plot == "Lifetimes Histogram":
             ax = self.figure.add_subplot(1, 1, 1)
+
             for ii in range(self.eta.shape[0]):
-                plt.hist(
+                color = self.colors[ii % len(self.colors)]
+                ax.hist(
                     1 / self.eta[-20000:, ii],
-                    bins=100,
-                    color=color,
-                    label=f"Species #{ii+1}",
-                    density=True,
+                    # bins=100,
+                    # color=color,
+                    # label=f"Species #{ii+1}",
+                    # density=True,
                 )
             ax.set_title(f"Lifetimes Histogram")
             ax.set_xlabel("Lifetime (ns)")
             ax.set_ylabel("Distribution")
             ax.legend()
-            self.canvas.draw()
         elif self.select_plot == "Maps":
             phi = np.mean(self.photon_int[-20000:, :, :], axis=0)
-            phi = phi.reshape(phi.shape[0], -1, self.img_sz)
+            phi = phi.reshape(phi.shape[0], -1, self.img_sz[1])
 
             num_images = phi.shape[0]
             cols = 3  # Number of columns
@@ -108,11 +106,12 @@ class PlotWindow(qt.QWidget):
             for ii in range(phi.shape[0]):
                 cmap = self.cmaps[ii % len(self.cmaps)]
                 ax = self.figure.add_subplot(rows, cols, ii + 1)
-                plt.imshow(phi[ii], cmap=cmap)
+                ax.imshow(phi[ii], cmap=cmap)
                 ax.set_title(f"Species #{ii + 1}")
                 ax.axis("off")
             self.figure.suptitle("Maps")
-            self.canvas.draw()
+        self.figure.tight_layout()
+        self.canvas.draw()
 
 
 class HyperparametersWindow(qt.QWidget):
@@ -268,8 +267,12 @@ class MainWindow(qt.QMainWindow):
 
         i_new = i_old.copy()
         i_new[:, :] = np.random.gamma(self.alpha_prop_int, i_old / self.alpha_prop_int)
-        lf_top = self.calculate_lifetime_likelihood_gpu_int(i_new, eta)
-        lf_bot = self.calculate_lifetime_likelihood_gpu_int(i_old, eta)
+        lf_top = self.calculate_lifetime_likelihood_gpu_int(
+            cp.asarray(i_new), cp.asarray(eta)
+        )
+        lf_bot = self.calculate_lifetime_likelihood_gpu_int(
+            cp.asarray(i_old), cp.asarray(eta)
+        )
 
         tmp_top = np.sum((i_new[:, :, None] * pi[:, None, :]), axis=0)
         a_top = np.sum(sc.poisson.logpmf(self.lambda_, tmp_top), axis=1)
@@ -380,8 +383,12 @@ class MainWindow(qt.QMainWindow):
             self.alpha_prior_life, eta_old / self.alpha_prior_life
         )
 
-        lf_top = self.calculate_lifetime_likelihood_gpu(photon_int, eta_prop)
-        lf_bot = self.calculate_lifetime_likelihood_gpu(photon_int, eta_old)
+        lf_top = self.calculate_lifetime_likelihood_gpu(
+            cp.asarray(photon_int), cp.asarray(eta_prop)
+        )
+        lf_bot = self.calculate_lifetime_likelihood_gpu(
+            cp.asarray(photon_int), cp.asarray(eta_old)
+        )
         lik_ratio = lf_top - lf_bot
 
         a_prior = np.sum(
@@ -484,7 +491,8 @@ class MainWindow(qt.QMainWindow):
                 numeric = 4
                 self.num = cp.arange(numeric)[None, None, None, :]
                 # Find the maximum length
-                max_len = max(len(np.squeeze(x)) for x in self.dt_)
+
+                max_len = max(np.size(np.squeeze(x)) for x in self.dt_)
                 self.dt_padded = np.zeros((len(self.dt_), max_len))
                 mask_ = np.zeros((len(self.dt_), max_len))
                 for i, x_ in enumerate(self.dt_):
@@ -528,17 +536,37 @@ class MainWindow(qt.QMainWindow):
 
     def show_plot(self):
         selected_plot = self.ui.combo_plot.currentText()
+        img_sz_text = self.ui.img_size.text().strip("()").split(",")
+        img_sz = (int(img_sz_text[0]), int(img_sz_text[1]))
+        # Create a new QDialog to host the PlotWindow
+        dialog = qt.QDialog(self)
+        dialog.setWindowTitle("Plot Results")
+        dialog.setMinimumSize(800, 600)  # Set a minimum size for the dialog
 
-        self.plot_window = PlotWindow(
+        # Create a layout for the dialog
+        layout = qt.QVBoxLayout(dialog)
+        # Create the PlotWindow as a widget (not a separate window)
+        plot_widget = PlotWindow(
             self.eta,
             self.photon_int,
             self.pi,
             selected_plot,
             self.nsb,
-            self.ui.img_size,
-            self,
+            img_sz,
+            dialog,  # Set the dialog as the parent
         )
-        self.plot_window.show()
+
+        # Add the plot widget to the dialog's layout
+        layout.addWidget(plot_widget)
+
+        # Create and add a close button
+        close_button = qt.QPushButton("Close", dialog)
+        close_button.clicked.connect(dialog.close)
+        layout.addWidget(close_button)
+
+        # Set the layout to the dialog
+        dialog.setLayout(layout)
+        dialog.exec()
 
     def export_results(self):
         options = qt.QFileDialog.Option.DontUseNativeDialog

@@ -71,7 +71,7 @@
        <x>0</x>
        <y>0</y>
        <width>379</width>
-       <height>197</height>
+       <height>201</height>
       </rect>
      </property>
      <attribute name="label">
@@ -275,13 +275,13 @@
           <x>0</x>
           <y>0</y>
           <width>387</width>
-          <height>200</height>
+          <height>204</height>
          </rect>
         </property>
         <attribute name="label">
          <string>Method Params</string>
         </attribute>
-        <widget class="QWidget" name="">
+        <widget class="QWidget" name="layoutWidget">
          <property name="geometry">
           <rect>
            <x>31</x>
@@ -496,7 +496,7 @@
           <x>0</x>
           <y>0</y>
           <width>387</width>
-          <height>199</height>
+          <height>203</height>
          </rect>
         </property>
         <attribute name="label">
@@ -513,19 +513,19 @@
          </property>
          <property name="styleSheet">
           <string notr="true">    QPushButton {
-        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #a1c4fd, stop:1 #c2e9fb);
+        background-color: rgb(169,169,169);
         color: rgb(2, 10, 117);
         border-radius: 10px;
         padding: 10px 20px;
-        border: 2px solid #5a8ee0;
+        border: 1px solid ;
         font-size: 12px;
         font-weight: bold;
     }
     QPushButton:hover {
-        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #85d7ff, stop:1 #a1e6fd);
+        background-color: rgb(105,105,105);
     }
     QPushButton:pressed {
-        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #5ca9f7, stop:1 #84d1f7);
+        background-color: rgb(105,105,105);
     }
 </string>
          </property>
@@ -534,7 +534,7 @@
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>../../../../../Downloads/pngegg.png</normaloff>../../../../../Downloads/pngegg.png</iconset>
+           <normaloff>../../../../../../../Downloads/pngegg.png</normaloff>../../../../../../../Downloads/pngegg.png</iconset>
          </property>
         </widget>
         <widget class="QPushButton" name="save_results">
@@ -569,7 +569,7 @@
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>../../../../../Downloads/kisspng-computer-icons-export-clip-art-5b19349dcb5f64.189638811528378525833.png</normaloff>../../../../../Downloads/kisspng-computer-icons-export-clip-art-5b19349dcb5f64.189638811528378525833.png</iconset>
+           <normaloff>../../../../../../../Downloads/kisspng-computer-icons-export-clip-art-5b19349dcb5f64.189638811528378525833.png</normaloff>../../../../../../../Downloads/kisspng-computer-icons-export-clip-art-5b19349dcb5f64.189638811528378525833.png</iconset>
          </property>
         </widget>
         <widget class="QComboBox" name="combo_plot">
@@ -737,7 +737,7 @@ QPushButton:pressed {
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>../../../../../Pictures/start.png</normaloff>../../../../../Pictures/start.png</iconset>
+       <normaloff>../../../../../../../Pictures/start.png</normaloff>../../../../../../../Pictures/start.png</iconset>
      </property>
      <property name="autoRepeatDelay">
       <number>300</number>
@@ -775,7 +775,7 @@ QPushButton:pressed {
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>../../../../../Downloads/cloud-data-upload-icon.png</normaloff>../../../../../Downloads/cloud-data-upload-icon.png</iconset>
+       <normaloff>../../../../../../../Downloads/cloud-data-upload-icon.png</normaloff>../../../../../../../Downloads/cloud-data-upload-icon.png</iconset>
      </property>
     </widget>
     <widget class="QProgressBar" name="progressBar">
@@ -827,7 +827,7 @@ QPushButton:pressed {
      <x>0</x>
      <y>0</y>
      <width>849</width>
-     <height>23</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="Settings">
