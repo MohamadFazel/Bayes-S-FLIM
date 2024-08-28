@@ -83,15 +83,21 @@ class PlotWindow(qt.QWidget):
         elif self.select_plot == "Lifetimes Histogram":
             ax = self.figure.add_subplot(1, 1, 1)
 
-            for ii in range(self.eta.shape[0]):
+            for ii in range(self.eta.shape[1]):
                 color = self.colors[ii % len(self.colors)]
-                ax.hist(
-                    1 / self.eta[-20000:, ii],
-                    # bins=100,
-                    # color=color,
-                    # label=f"Species #{ii+1}",
-                    # density=True,
-                )
+                lifetimes = 1 / self.eta[-20000:, ii]
+                valid_lifetimes = lifetimes[np.isfinite(lifetimes)]
+                if len(valid_lifetimes) > 0:
+                    ax.hist(
+                        valid_lifetimes,
+                        bins=100,
+                        color=color,
+                        label=f"Species #{ii+1}",
+                        density=True,
+                        alpha=0.7,
+                    )
+                else:
+                    print(f"Warning: No valid lifetimes for Species #{ii+1}")
             ax.set_title(f"Lifetimes Histogram")
             ax.set_xlabel("Lifetime (ns)")
             ax.set_ylabel("Distribution")
