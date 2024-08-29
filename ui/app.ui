@@ -205,7 +205,7 @@
         </widget>
        </item>
        <item row="0" column="2">
-        <widget class="QLineEdit" name="t_inter_p"/>
+        <widget class="QLineEdit" name="inter_puls_time"/>
        </item>
        <item row="1" column="1">
         <spacer name="horizontalSpacer_3">
@@ -292,7 +292,7 @@
          </property>
          <layout class="QGridLayout" name="gridLayout">
           <item row="2" column="2">
-           <widget class="QLineEdit" name="num_iter">
+           <widget class="QLineEdit" name="n_iteration">
             <property name="text">
              <string/>
             </property>
@@ -373,7 +373,7 @@
            </widget>
           </item>
           <item row="1" column="2">
-           <widget class="QLineEdit" name="num_species"/>
+           <widget class="QLineEdit" name="n_spec"/>
           </item>
           <item row="0" column="2">
            <widget class="QLineEdit" name="img_size"/>

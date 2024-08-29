@@ -194,13 +194,13 @@ class MainWindow(qt.QMainWindow):
         self.set_default_values()
 
     def set_default_values(self):
-        self.n_iter = 40000
-        self.num_species.setText(str(3))
-        self.ui.t_inter_p.setText(str(12.85))
+        self.n_iter = 50000
+        self.ui.n_spec.setText(str(3))
+        self.ui.inter_puls_time.setText(str(12.85))
         self.ui.irf_sigma.setText(str(0.51))
         self.ui.irf_tau.setText(str(2.506))
-        self.ui.num_iter.setText(str(200000))
-        self.ui.img_size.setText(str((128, 128)))
+        self.ui.n_iteration.setText(str(100000))
+        self.ui.img_size.setText(str((32, 32)))
         self.dt_ = None
         self.lambda_ = None
 
@@ -214,11 +214,13 @@ class MainWindow(qt.QMainWindow):
         self.alpha_prop_pi = 5000
 
     def get_values(self):
-        self.num_species = int(self.ui.num_species.text())
-        self.num_iter = int(self.ui.num_iter.text())
-        self.t_inter_p = float(self.ui.t_inter_p.text())
+        self.num_species = int(self.ui.n_spec.text())
+        self.num_iter = int(self.ui.n_iteration.text())
+        self.t_inter_p = float(self.ui.inter_puls_time.text())
         self.tau_irf = float(self.ui.irf_tau.text())
         self.sig_irf = float(self.ui.irf_sigma.text())
+        if self.num_iter <= self.n_iter:
+            self.n_iter = self.num_iter
 
     def browseFile(self):
         options = qt.QFileDialog.Option.DontUseNativeDialog
@@ -536,7 +538,7 @@ class MainWindow(qt.QMainWindow):
                 qt.QMessageBox.information(
                     self, "Analysis Complete", "The analysis has finished successfully!"
                 )
-
+                # self.reset_values()
                 self.ui.plot_.setEnabled(True)
                 self.ui.save_results.setEnabled(True)
             finally:
@@ -581,11 +583,10 @@ class MainWindow(qt.QMainWindow):
                 self,
                 "Save Plot",
                 "Do you want to save the plot?",
-                qt.QMessageBox.Yes | qt.QMessageBox.No,
-                qt.QMessageBox.No,
+                qt.QMessageBox.StandardButton.Yes | qt.QMessageBox.StandardButton.No,
             )
-        if reply == qt.QMessageBox.Yes:
-            self.save_plot(selected_plot, img_sz)
+            if reply == qt.QMessageBox.StandardButton.Yes:
+                self.save_plot(selected_plot, img_sz)
 
     def save_plot(self, selected_plot, img_sz):
         options = qt.QFileDialog.Option.DontUseNativeDialog
@@ -625,7 +626,7 @@ class MainWindow(qt.QMainWindow):
                 pin = np.mean(self.pi[-20000:, :, :], axis=0)
                 x = np.linspace(375, 760, self.nsb)
                 for ii in range(pin.shape[0]):
-                    color = colors[ii % len(self.colors)]
+                    color = colors[ii % len(colors)]
                     ax.plot(
                         x,
                         pin[ii] / np.sum(pin[ii]),
@@ -642,7 +643,7 @@ class MainWindow(qt.QMainWindow):
             elif selected_plot == "Lifetimes Histogram":
                 fig, ax = plt.subplots()
                 for ii in range(self.eta.shape[1]):
-                    color = colors[ii % len(self.colors)]
+                    color = colors[ii % len(colors)]
                     lifetimes = 1 / self.eta[-20000:, ii]
                     valid_lifetimes = lifetimes[np.isfinite(lifetimes)]
                     if len(valid_lifetimes) > 0:
@@ -671,7 +672,7 @@ class MainWindow(qt.QMainWindow):
                 num_images = phi.shape[0]
                 cols = 3  # Number of columns
                 for ii in range(phi.shape[0]):
-                    cmap = cmaps[ii % len(self.cmaps)]
+                    cmap = cmaps[ii % len(cmaps)]
                     fig, ax = plt.subplots()
                     ax.imshow.imshow(phi[ii], cmap=cmap)
                     ax.set_title(f"Species #{ii + 1}")
@@ -686,10 +687,13 @@ class MainWindow(qt.QMainWindow):
         options = qt.QFileDialog.Option.DontUseNativeDialog
         file_dialog = qt.QFileDialog(self)
         file_dialog.setOptions(options)
+        default_file_name = "results.mat"
+
         filters = "MAT Files (*.mat);;Python Dictionary (*.pkl)"
-        file_name, _ = file_dialog.getSaveFileName(
-            self, "Save Results", "", filters, options=options
+        file_name, selected_filter = file_dialog.getSaveFileName(
+            self, "Save Results", default_file_name, filters, options=options
         )
+
         if file_name:
             if file_name.endswith(".mat"):
                 self.save_as_mat(file_name)
