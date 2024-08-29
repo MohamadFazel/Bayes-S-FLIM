@@ -6,7 +6,6 @@
 modules/__pycache__/
 phasor/.vscode
 src/__pycache__
-*.png
 
 *.npy
 *.mat

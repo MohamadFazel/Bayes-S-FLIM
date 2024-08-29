@@ -17,7 +17,10 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 class PlotWindow(qt.QWidget):
-    def __init__(self, eta, photon_int, pi, select_plot, nsb, img_sz, parent=None):
+
+    def __init__(
+        self, eta, photon_int, pi, select_plot, nsb, img_sz, check_box, parent=None
+    ):
         super().__init__(parent)
         self.setWindowTitle("Plot Results")
         self.setMinimumSize(600, 400)
@@ -27,6 +30,7 @@ class PlotWindow(qt.QWidget):
         self.select_plot = select_plot
         self.nsb = nsb
         self.img_sz = img_sz
+        self.checkbox = check_box
 
         # Create a layout for the plot
         layout = qt.QVBoxLayout()
@@ -186,12 +190,11 @@ class MainWindow(qt.QMainWindow):
 
         self.ui.save_results.clicked.connect(self.export_results)
         self.ui.save_results.setEnabled(False)
-
         self.analysis_results = True
         self.set_default_values()
 
     def set_default_values(self):
-        self.n_iter = 10
+        self.n_iter = 40000
         self.num_species.setText(str(3))
         self.ui.t_inter_p.setText(str(12.85))
         self.ui.irf_sigma.setText(str(0.51))
@@ -250,9 +253,9 @@ class MainWindow(qt.QMainWindow):
     def init_chain(self):
         self.n_pix = self.lambda_.shape[0]
         self.nsb = self.lambda_.shape[-1]
-        self.eta = np.zeros((self.num_iter, self.num_species))
-        self.pi = np.random.rand(self.num_iter, self.num_species, self.nsb)
-        self.photon_int = np.zeros((self.num_iter, self.num_species, self.n_pix))
+        self.eta = np.zeros((self.n_iter, self.num_species))
+        self.pi = np.random.rand(self.n_iter, self.num_species, self.nsb)
+        self.photon_int = np.zeros((self.n_iter, self.num_species, self.n_pix))
         self.eta[0, :] = np.random.rand(self.num_species)
         for mm in range(self.num_species):
             self.pi[0, mm, :] /= np.sum(self.pi[0, mm, :])
@@ -416,7 +419,6 @@ class MainWindow(qt.QMainWindow):
         if acc_ratio > np.log(np.random.rand()):
             eta_old = eta_prop
             self.accept_eta += 1
-
         if it_ < (numerator + 1):
             self.eta[0, :] = eta_old.copy()
         else:
@@ -573,6 +575,112 @@ class MainWindow(qt.QMainWindow):
         # Set the layout to the dialog
         dialog.setLayout(layout)
         dialog.exec()
+
+        if self.ui.save_box.isChecked():
+            reply = qt.QMessageBox.question(
+                self,
+                "Save Plot",
+                "Do you want to save the plot?",
+                qt.QMessageBox.Yes | qt.QMessageBox.No,
+                qt.QMessageBox.No,
+            )
+        if reply == qt.QMessageBox.Yes:
+            self.save_plot(selected_plot, img_sz)
+
+    def save_plot(self, selected_plot, img_sz):
+        options = qt.QFileDialog.Option.DontUseNativeDialog
+        file_dialog = qt.QFileDialog(self)
+        file_dialog.setOptions(options)
+        filters = "PNG Files (*.png);"
+        file_name, _ = file_dialog.getSaveFileName(
+            self, "Save Plot", "", filters, options=options
+        )
+        colors = [
+            "red",
+            "blue",
+            "green",
+            "orange",
+            "purple",
+            "black",
+            "magenta",
+            "yellow",
+            "brown",
+            "pink",
+        ]
+        cmaps = [
+            "Reds",
+            "Blues",
+            "Greens",
+            "Oranges",
+            "Purples",
+            "Greys",
+            "spring",
+            "Wistia",
+            "copper",
+            "cool",
+        ]
+        if file_name:
+            if selected_plot == "Spectra":
+                fig, ax = plt.subplots()
+                pin = np.mean(self.pi[-20000:, :, :], axis=0)
+                x = np.linspace(375, 760, self.nsb)
+                for ii in range(pin.shape[0]):
+                    color = colors[ii % len(self.colors)]
+                    ax.plot(
+                        x,
+                        pin[ii] / np.sum(pin[ii]),
+                        color=color,
+                        label=f"Species #{ii+1}",
+                    )
+                ax.set_title(f"Species Spectra")
+                ax.set_xlabel("Wavelength (nm)")
+                ax.set_ylabel("Distribution")
+                ax.legend()
+                plt.savefig(file_name)
+                plt.close(fig)
+
+            elif selected_plot == "Lifetimes Histogram":
+                fig, ax = plt.subplots()
+                for ii in range(self.eta.shape[1]):
+                    color = colors[ii % len(self.colors)]
+                    lifetimes = 1 / self.eta[-20000:, ii]
+                    valid_lifetimes = lifetimes[np.isfinite(lifetimes)]
+                    if len(valid_lifetimes) > 0:
+                        ax.hist(
+                            valid_lifetimes,
+                            bins=100,
+                            color=color,
+                            label=f"Species #{ii+1}",
+                            density=True,
+                            alpha=0.7,
+                        )
+                    else:
+                        print(f"Warning: No valid lifetimes for Species #{ii+1}")
+
+                ax.set_title("Lifetimes Histogram")
+                ax.set_xlabel("Lifetime (ns)")
+                ax.set_ylabel("Distribution")
+                ax.legend()
+                plt.savefig(file_name)
+                plt.close(fig)
+
+            elif selected_plot == "Maps":
+                phi = np.mean(self.photon_int[-20000:, :, :], axis=0)
+                phi = phi.reshape(phi.shape[0], -1, [1])
+
+                num_images = phi.shape[0]
+                cols = 3  # Number of columns
+                for ii in range(phi.shape[0]):
+                    cmap = cmaps[ii % len(self.cmaps)]
+                    fig, ax = plt.subplots()
+                    ax.imshow.imshow(phi[ii], cmap=cmap)
+                    ax.set_title(f"Species #{ii + 1}")
+                    ax.axis("off")
+                    plt.savefig(
+                        file_name + f"_#{ii+1}", bbox_inches="tight", pad_inches=0
+                    )
+
+            qt.QMessageBox.information(self, "Success", "Plot saved successfully.")
 
     def export_results(self):
         options = qt.QFileDialog.Option.DontUseNativeDialog

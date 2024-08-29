@@ -513,11 +513,11 @@
          </property>
          <property name="styleSheet">
           <string notr="true">    QPushButton {
-        background-color: rgb(169,169,169);
-        color: rgb(2, 10, 117);
+        background-color: #797986;
+        color: #18181b;
         border-radius: 10px;
         padding: 10px 20px;
-        border: 1px solid ;
+        border: 1px solid #494950 ;
         font-size: 12px;
         font-weight: bold;
     }
@@ -530,11 +530,11 @@
 </string>
          </property>
          <property name="text">
-          <string>PLOT</string>
+          <string>Plot</string>
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>../../../../../../../Downloads/pngegg.png</normaloff>../../../../../../../Downloads/pngegg.png</iconset>
+           <normaloff>../icon/plots.png</normaloff>../icon/plots.png</iconset>
          </property>
         </widget>
         <widget class="QPushButton" name="save_results">
@@ -548,11 +548,11 @@
          </property>
          <property name="styleSheet">
           <string notr="true">    QPushButton {
-        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #fdd835, stop:1 #fbc02d);
-        color: rgb(38, 25, 0);
+        background-color: #797986;
+        color: #18181b;
         border-radius: 10px;
         padding: 10px 20px;
-        border: 2px solid #f9a825;
+        border: 2px solid #494950;
         font-size: 12px;
         font-weight: bold;
     }
@@ -569,7 +569,7 @@
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>../../../../../../../Downloads/kisspng-computer-icons-export-clip-art-5b19349dcb5f64.189638811528378525833.png</normaloff>../../../../../../../Downloads/kisspng-computer-icons-export-clip-art-5b19349dcb5f64.189638811528378525833.png</iconset>
+           <normaloff>../icon/export.png</normaloff>../icon/export.png</iconset>
          </property>
         </widget>
         <widget class="QComboBox" name="combo_plot">
@@ -577,12 +577,45 @@
           <rect>
            <x>30</x>
            <y>20</y>
-           <width>161</width>
+           <width>170</width>
            <height>31</height>
           </rect>
          </property>
          <property name="styleSheet">
-          <string notr="true"/>
+          <string notr="true">QComboBox {
+    background-color: #506567;
+    color: #18181b;
+    border-radius: 1px;
+    padding: 1px 5px;
+    border: 1px solid #506567;
+    font-size: 12px;
+    font-weight: bold;
+  
+}
+
+
+QComboBox::drop-down {
+    background-color: #8ca4a6;
+    border-left: 1px solid #3f3f4a;
+    border-radius: 0px 5px 5px 0px;
+    width: 25px;
+}
+
+QComboBox::down-arrow {
+    image: url(icon/down_arrow.png); /* Replace with your icon */
+    width: 12px;
+    height: 12px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #506567;
+    color: #18181b;
+    selection-background-color: #506567;
+    border: 1px solid #506567;
+    font-size: 12px;
+    font-weight: bold;
+}
+</string>
          </property>
          <item>
           <property name="text">
@@ -600,50 +633,17 @@
           </property>
          </item>
         </widget>
-        <widget class="QCheckBox" name="save_check">
+        <widget class="QCheckBox" name="save_box">
          <property name="geometry">
           <rect>
-           <x>230</x>
+           <x>250</x>
            <y>20</y>
-           <width>91</width>
+           <width>85</width>
            <height>31</height>
           </rect>
          </property>
-         <property name="styleSheet">
-          <string notr="true">    QCheckBox {
-        spacing: 5px; /* Space between the checkbox and the text */
-        font-size: 12px; /* Smaller font size */
-        color: #000000; /* Dark text color for high contrast */
-    }
-    QCheckBox::indicator {
-        width: 16px; /* Slightly larger for better visibility */
-        height: 16px;
-        border: 2px solid #000000; /* Black border for high contrast */
-        border-radius: 4px; /* Slightly rounded corners */
-        background-color: #ffffff; /* White background for high visibility */
-    }
-    QCheckBox::indicator:checked {
-        background-color: #000000; /* Black background when checked */
-        border: 2px solid #000000; /* Matching border color */
-    }
-    QCheckBox::indicator:checked::after {
-        content: &quot;&quot;; /* Add checkmark icon */
-        width: 8px;
-        height: 8px;
-        border: solid white; /* White checkmark for visibility */
-        border-width: 0 2px 2px 0; /* Shape of the checkmark */
-        display: block;
-        transform: rotate(45deg);
-        position: relative;
-        top: 2px;
-        left: 4px;
-    }
-    QCheckBox::indicator:hover {
-        border: 2px solid #333333; /* Darker border on hover */
-    }</string>
-         </property>
          <property name="text">
-          <string>save_plots</string>
+          <string>Save Plot</string>
          </property>
         </widget>
        </widget>
@@ -710,12 +710,12 @@
      </property>
      <property name="styleSheet">
       <string notr="true">QPushButton {
-    border: 2px solid green;;
+    border: 2px solid #013208;;
     border-radius: 30px;
 	font: 14pt &quot;Sans Serif&quot;;
     border-style: outset; 
-	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, 	stop:0 #d4fc79, stop:1 #96e6a1);
-     color: green;
+	background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, 	stop:0 #d4fc79, stop:1 #013208);
+     color: #04350a;
      padding: 10px 20px;
 	font-weight: bold;
 
@@ -737,7 +737,7 @@ QPushButton:pressed {
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>../../../../../../../Pictures/start.png</normaloff>../../../../../../../Pictures/start.png</iconset>
+       <normaloff>../icon/start.png</normaloff>../icon/start.png</iconset>
      </property>
      <property name="autoRepeatDelay">
       <number>300</number>
@@ -754,11 +754,11 @@ QPushButton:pressed {
      </property>
      <property name="styleSheet">
       <string notr="true">    QPushButton {
-        background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:1, stop:0 #fbc2eb, stop:1 #a18cd1);
-        color: rgb(50, 0, 75);
+        background-color:#797986;
+        color: #18181b;
         border-radius: 10px;
         padding: 10px 20px;
-        border: 2px solid #d183c9;
+        border: 2px solid #313135;
         font-size: 11px;
         font-weight: bold;
     }
@@ -775,7 +775,7 @@ QPushButton:pressed {
      </property>
      <property name="icon">
       <iconset>
-       <normaloff>../../../../../../../Downloads/cloud-data-upload-icon.png</normaloff>../../../../../../../Downloads/cloud-data-upload-icon.png</iconset>
+       <normaloff>../icon/upload.png</normaloff>../icon/upload.png</iconset>
      </property>
     </widget>
     <widget class="QProgressBar" name="progressBar">
@@ -789,8 +789,10 @@ QPushButton:pressed {
      </property>
      <property name="styleSheet">
       <string notr="true">    QProgressBar {
-	font: 200 italic 11pt &quot;Ubuntu Sans&quot;;
-        border: 2px solid #8f8f91;
+		font: 200 italic 11pt &quot;Ubuntu Sans&quot;;
+		background-color: #41f157;
+        color: #04350a;
+		border-style: outset;
         border-radius: 5px;
         text-align: center;
         background-color: #f3f3f3;
