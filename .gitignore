@@ -8,7 +8,7 @@ phasor/.vscode
 src/__pycache__
 
 *.npy
-*.mat
+# *.mat
 *.png
 *.jpg
 *.jpeg
