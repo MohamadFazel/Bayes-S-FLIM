@@ -166,7 +166,7 @@ for i, sublist in enumerate(dt):
 
 # Save the structure as a .mat file
 savemat("cache/output_file.mat", matlab_structure)
-savemat("sample_data/sample_syntetic.mat", {"Dt": dt, "Lambda": lambda_})
+savemat("sample_data/sample_synthetic.mat", {"Dt": dt, "Lambda": lambda_})
 
 # Run SpectralFlim sampler
 pi, photon_int, eta, pi_bg = run_sflim_sampler(
