@@ -1,10 +1,12 @@
-import numpy as np
-import cupy as cp
-from ratio import *
-from intensity import *
-from liftim import *
-from background import *
 from datetime import datetime
+
+import cupy as cp
+import numpy as np
+
+from .background import *
+from .intensity import *
+from .liftim import *
+from .ratio import *
 
 
 def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
@@ -77,14 +79,10 @@ def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
                 print(f"Eta: {np.sort(1/eta[0])}\n Background: {np.mean(pi_bg[0])} \n")
 
             else:
-                print(
-                    f"Eta: {np.sort(1/eta[jj-numerator-1])}\n Background: {np.mean(pi_bg[jj-numerator-1])} \n"
-                )
+                print(f"Eta: {np.sort(1/eta[jj-numerator-1])}\n Background: {np.mean(pi_bg[jj-numerator-1])} \n")
 
         if jj < (numerator + 1):
-            pi[0, :, :], accept_pi = sample_photon_probability(
-                lambda_, pi[0, :, :], photon_int[0, :, :], accept_pi
-            )
+            pi[0, :, :], accept_pi = sample_photon_probability(lambda_, pi[0, :, :], photon_int[0, :, :], accept_pi)
             photon_int[0, :, :], accept_i = sample_int(
                 lambda_,
                 pi[0, :, :],

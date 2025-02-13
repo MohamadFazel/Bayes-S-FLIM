@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from forward import gen_data
 import scipy.io as sio
 
+from forward import gen_data
+
 # _______________________________________________________________________________-
-n_pix = 10
-n_pulse = 5 * 1e3
+n_pix = 16
+n_pulse = 5 * 1e5
 t_inter_p = 12.8
 lifetimes = np.array([1.6, 3.5, 5])
 spec_ind = np.array([1, 2, 3])
@@ -27,7 +28,7 @@ dt, lambda_, s, mu, sigma, spectral_dt = gen_data(
     0,
 )
 
-with open("/home/reza/software/Spectral-FLIM/phasor/data/params.txt", "w") as file:
+with open("/home/reza/software/Spectral-FLIM/phasor/data/paramsAy.txt", "w") as file:
     file.write(
         f"n_pix = {n_pix},\n n_pulse = {n_pulse},\n t_inter_p = {t_inter_p},\n lifetimes = {lifetimes},\n tau_irf = {tau_irf},\n sig_irf = {sig_irf},\n mu = {mu},\n sigma = {sigma}"
     )
@@ -36,9 +37,10 @@ with open("/home/reza/software/Spectral-FLIM/phasor/data/params.txt", "w") as fi
 # np.save("lambda_", lambda_)
 
 sio.savemat(
-    "/home/reza/software/Spectral-FLIM/phasor/data/data_.mat",
+    "/home/reza/software/Spectral-FLIM/phasor/data/data_ay.mat",
     {"Dt": dt, "Lambda": lambda_},
 )
+exit()
 spectral_pix_dt = []
 print(len(spectral_dt))
 for spec_dt in spectral_dt:
@@ -62,26 +64,20 @@ range_bins = (0, t_inter_p)
 histograms = []
 
 for channel_lifetimes in spectral_channels:
-    histogram, bin_edges = np.histogram(
-        channel_lifetimes, bins=num_bins, range=range_bins
-    )
+    histogram, bin_edges = np.histogram(channel_lifetimes, bins=num_bins, range=range_bins)
     histograms.append(histogram)
 # Combine all lifetimes into one list
 all_lifetimes = [lifetime for sublist in spectral_channels for lifetime in sublist]
 
 # Calculate the histogram for all lifetimes combined
-combined_histogram, combined_bin_edges = np.histogram(
-    all_lifetimes, bins=num_bins, range=range_bins
-)
+combined_histogram, combined_bin_edges = np.histogram(all_lifetimes, bins=num_bins, range=range_bins)
 data_to_save = {
     "channel_histograms": histograms,
     "combined_histogram": combined_histogram,
     "bin_edges": combined_bin_edges,  # assuming all histograms share the same bin edges
 }
 
-sio.savemat(
-    "/home/reza/software/Spectral-FLIM/phasor/data/histograms.mat", data_to_save
-)
+sio.savemat("/home/reza/software/Spectral-FLIM/phasor/data/histograms.mat", data_to_save)
 
 # Plot the combined histogram
 # plt.figure()

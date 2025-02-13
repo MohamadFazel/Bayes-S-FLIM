@@ -1,10 +1,8 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 
-def gen_data(
-    n_pix, n_pulse, t_inter_p, lifetimes, spec_ind, exc_probs, tau_irf, sig_irf, bg
-):
+def gen_data(n_pix, n_pulse, t_inter_p, lifetimes, spec_ind, exc_probs, tau_irf, sig_irf, bg):
     """
     genData() generates a set of arrival times from input lifetimes
     and excitation probability.
@@ -30,13 +28,13 @@ def gen_data(
     n_spec = lifetimes.size
     mu = np.array(
         [
-            [620, 635],
-            # [555, 537],
+            # [620, 635],
+            [555, 537],
             [410, 435],
             # [655, 640],
             # [483, 502],
+            [698, 678],
             [585, 603],
-            # [698, 678],
             # [432, 454],
             # [515, 531],
         ]
@@ -60,18 +58,14 @@ def gen_data(
         pulse_excitation = pulse_excitation > np.random.rand(n_pulse)
 
         exc_pulse_indices = np.where(pulse_excitation)[0]
-        exc_species_indices = np.random.choice(
-            n_spec, size=len(exc_pulse_indices), p=exc_probs[pp]
-        )
+        exc_species_indices = np.random.choice(n_spec, size=len(exc_pulse_indices), p=exc_probs[pp])
         exc_species_lifetimes = lifetimes[exc_species_indices]
-        exc_times = np.random.normal(
-            tau_irf, sig_irf, len(exc_pulse_indices)
-        ) + np.random.exponential(exc_species_lifetimes)
+        exc_times = np.random.normal(tau_irf, sig_irf, len(exc_pulse_indices)) + np.random.exponential(
+            exc_species_lifetimes
+        )
         arrival_times = exc_times - t_inter_p * np.floor(exc_times / t_inter_p)
 
-        index_lambda = np.random.choice(
-            2, size=exc_species_indices.size, p=[0.75, 0.25]
-        )
+        index_lambda = np.random.choice(2, size=exc_species_indices.size, p=[0.75, 0.25])
         tmp_lamds = np.random.normal(
             mu[exc_species_indices, index_lambda],
             sigma[exc_species_indices, index_lambda],
