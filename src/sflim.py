@@ -7,6 +7,7 @@ from .background import *
 from .intensity import *
 from .liftim import *
 from .ratio import *
+from tqdm import tqdm
 
 
 def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
@@ -66,23 +67,29 @@ def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
     accept_eta = 0
     accept_bg = 0
     t0 = datetime.now()
-    for jj in range(1, n_iter):
+    for jj in tqdm(range(1, n_iter)):
         numerator = n_iter - num_itr
         if jj // 10000 == jj / 10000:
             print("Iteration:", jj)
-            print(f"Time interval: {datetime.now()-t0}")
+            print(f"Time interval: {datetime.now() - t0}")
             print("Pi acceptance ratio:", 100 * accept_pi / jj)
             print("I acceptance ratio:", 100 * accept_i / jj)
             print("Eta acceptance ratio:", 100 * accept_eta / jj)
             print("Background acceptance ratio:", 100 * accept_bg / jj)
             if jj < (numerator + 1):
-                print(f"Eta: {np.sort(1/eta[0])}\n Background: {np.mean(pi_bg[0])} \n")
+                print(
+                    f"Eta: {np.sort(1 / eta[0])}\n Background: {np.mean(pi_bg[0])} \n"
+                )
 
             else:
-                print(f"Eta: {np.sort(1/eta[jj-numerator-1])}\n Background: {np.mean(pi_bg[jj-numerator-1])} \n")
+                print(
+                    f"Eta: {np.sort(1 / eta[jj - numerator - 1])}\n Background: {np.mean(pi_bg[jj - numerator - 1])} \n"
+                )
 
         if jj < (numerator + 1):
-            pi[0, :, :], accept_pi = sample_photon_probability(lambda_, pi[0, :, :], photon_int[0, :, :], accept_pi)
+            pi[0, :, :], accept_pi = sample_photon_probability(
+                lambda_, pi[0, :, :], photon_int[0, :, :], accept_pi
+            )
             photon_int[0, :, :], accept_i = sample_int(
                 lambda_,
                 pi[0, :, :],
