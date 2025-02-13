@@ -1,4 +1,5 @@
 import time
+import os
 
 from scipy.io import savemat
 
@@ -22,14 +23,17 @@ plt.show()
 b = 32
 excitation_probs = np.random.random((b, b, 4)) * 0.000008
 
-
 excitation_probs = excitation_probs.reshape(-1, 4)
 
 for it in range(excitation_probs.shape[0]):
     if img1[it] > 0.1:
-        excitation_probs[it, 0] = img1[it] * 0.000004  # np.random.randint(6,10) * 0.0009
+        excitation_probs[it, 0] = (
+            img1[it] * 0.000004
+        )  # np.random.randint(6,10) * 0.0009
     if img2[it] > 0.1:
-        excitation_probs[it, 1] = img2[it] * 0.000016  # np.random.randint(6,10) * 0.0009
+        excitation_probs[it, 1] = (
+            img2[it] * 0.000016
+        )  # np.random.randint(6,10) * 0.0009
     if np.abs(img3[it]) > 0:
         excitation_probs[it, 2] = img3[it] * 0.000008  # np.random.randint(6,10)*0.0009
     if np.abs(img4[it]) > 0:
@@ -37,33 +41,36 @@ for it in range(excitation_probs.shape[0]):
 
 save_dir = ""
 
+if not os.path.exists("cache"):
+    os.makedirs("cache")
+
 img = excitation_probs[:, 0].reshape(-1, b)
 print(img.max())
 plt.imshow(img, cmap="Blues")
-plt.savefig("chache/img1.png")
+plt.savefig("cache/img1.png")
 plt.show()
-np.save("chache/img1.npy", img)
+np.save("cache/img1.npy", img)
 
 img = excitation_probs[:, 1].reshape(-1, b)
 print(img.max())
 plt.imshow(img, cmap="Greens")
-plt.savefig("chache/img2.png")
+plt.savefig("cache/img2.png")
 plt.show()
-np.save("chache/img2.npy", img)
+np.save("cache/img2.npy", img)
 
 img = excitation_probs[:, 2].reshape(-1, b)
 print(img.max())
 plt.imshow(img, cmap="Oranges")
-plt.savefig("chache/img3.png")
+plt.savefig("cache/img3.png")
 plt.show()
-np.save("chache/img3.npy", img)
+np.save("cache/img3.npy", img)
 
 img = excitation_probs[:, 3].reshape(-1, b)
 print(img.max())
 plt.imshow(img, cmap="Purples")
-plt.savefig("chache/img4.png")
+plt.savefig("cache/img4.png")
 plt.show()
-np.save("chache/img4.npy", img)
+np.save("cache/img4.npy", img)
 
 # img = excitation_probs[:,3].reshape(-1,b)
 # print(img.max())
@@ -111,16 +118,18 @@ np.save("chache/img4.npy", img)
 img = np.sum(excitation_probs[:, :], axis=1).reshape(-1, b)
 print(img.max())
 plt.imshow(img, cmap="gray")
-plt.savefig("chache/img.png")
+plt.savefig("cache/img.png")
 plt.show()
-np.save("chache/img.npy", img)
+np.save("cache/img.npy", img)
 
 # Set parameters for data generation
 num_species = 4
 num_pixels = b * b
 num_pulses = 10**5
 inter_pulse_time = 12.8
-lifetimes = np.array([0.5, 0.9, 2.0, 5.0])  # np.array([0.6, 0.9, 1.3, 1.6, 2, 2.4, 3.1, 4, 5])
+lifetimes = np.array(
+    [0.5, 0.9, 2.0, 5.0]
+)  # np.array([0.6, 0.9, 1.3, 1.6, 2, 2.4, 3.1, 4, 5])
 spec_indices = np.arange(lifetimes.shape[0]) + 1
 # excitation_probs = np.random.random((num_pixels, num_species)) * 0.008
 print(excitation_probs.shape)
@@ -146,8 +155,8 @@ dt, lambda_, s, mu, sigma, _ = gen_data(
     background,
 )
 
-np.save(f"chache/lambda_.npy", lambda_)
-# np.save(f"chache/dt.npy", dt)
+np.save(f"cache/lambda_.npy", lambda_)
+# np.save(f"cache/dt.npy", dt)
 matlab_structure = {}
 
 # Assign each nested list to a field in the structure
@@ -156,7 +165,7 @@ for i, sublist in enumerate(dt):
     matlab_structure[field_name] = np.array(sublist)
 
 # Save the structure as a .mat file
-savemat("chache/output_file.mat", matlab_structure)
+savemat("cache/output_file.mat", matlab_structure)
 savemat("sample_data/sample_syntetic.mat", {"Dt": dt, "Lambda": lambda_})
 
 # Run SpectralFlim sampler
@@ -166,9 +175,9 @@ pi, photon_int, eta, pi_bg = run_sflim_sampler(
 
 
 timestr = time.strftime("%m%d%H%M")
-np.save(f"chache/Pi_{timestr}.npy", pi)
-np.save(f"chache/Phot_{timestr}.npy", photon_int)
-np.save(f"chache/Eta_{timestr}.npy", eta)
+np.save(f"cache/Pi_{timestr}.npy", pi)
+np.save(f"cache/Phot_{timestr}.npy", photon_int)
+np.save(f"cache/Eta_{timestr}.npy", eta)
 
-np.save(f"chache/sigma_{timestr}.npy", sigma)
-np.save(f"chache/mu_{timestr}.npy", mu)
+np.save(f"cache/sigma_{timestr}.npy", sigma)
+np.save(f"cache/mu_{timestr}.npy", mu)
