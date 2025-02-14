@@ -30,7 +30,7 @@ def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
     npix = np.shape(lambda_)[0]
     numeric = 4
     num_itr = 50000  # Number of iterations keeping the chain
-    num = cp.arange(numeric)[None, None, None, :]
+    num = cp.arange(numeric)[None, None, None, :].astype(cp.float32)
 
     # Find the maximum length
     max_len = max(len(x) for x in dt)
