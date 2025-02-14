@@ -1,0 +1,12 @@
+{
+    "file_path": "sample_data/sample_syntetic.mat",
+    "save_path": "chache",
+    "t_inter_p": 12.8,
+    "tau_irf": 2.516,
+    "sig_irf": 0.51,
+    "num_species": 3,
+    "n_iter": 350000,
+    "img_size": [32, 32],
+    "slice_params": [[0, 32, null], [0, 32, null]],
+    "name_without_extension": "data#11"
+}

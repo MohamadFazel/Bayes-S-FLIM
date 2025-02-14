@@ -1,19 +1,17 @@
-import numpy as np
-import matplotlib.pylab as plt
-from datetime import datetime
-from src.sflim import run_sflim_sampler
-from src.forward import gen_data
-import scipy.io as sio
 import hashlib
-import sys
-
-import time
 import os
+import sys
+import time
+from datetime import datetime
+
+import matplotlib.pylab as plt
 import numpy as np
 import scipy as sc
-import matplotlib.pylab as plt
+import scipy.io as sio
 
-# nakon lore, nakon
+from src.forward import gen_data
+from src.sflim import run_sflim_sampler
+
 #########################
 ########## Params #######
 #########################
@@ -209,9 +207,7 @@ print(f"dt shape: {dt.shape}")
 
 t0 = datetime.now()
 timestr = time.strftime("%m%d%H%M%S")
-pi, photon_int, eta, bg = run_sflim_sampler(
-    dt, lambda_, TauIRF, SigIRF, TInterP, NIter, num_species
-)
+pi, photon_int, eta, bg = run_sflim_sampler(dt, lambda_, TauIRF, SigIRF, TInterP, NIter, num_species)
 
 np.save(f"{save_path}/Pi_{name_without_extension}_{timestr}.npy", pi)
 np.save(f"{save_path}/int_{name_without_extension}_{timestr}.npy", photon_int)
