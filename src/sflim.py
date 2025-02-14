@@ -3,10 +3,10 @@ from datetime import datetime
 import cupy as cp
 import numpy as np
 
-from .background import *
-from .intensity import *
-from .liftim import *
-from .ratio import *
+# from .background import sample_bg
+from .intensity import sample_int
+from .liftim import sample_lifetime
+from .ratio import sample_photon_probability
 from tqdm import tqdm
 
 
@@ -69,13 +69,10 @@ def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
     t0 = datetime.now()
     for jj in tqdm(range(1, n_iter)):
         numerator = n_iter - num_itr
-        if jj // 10000 == jj / 10000:
+        if jj % 10000 == 0:
             print("Iteration:", jj)
             print(f"Time interval: {datetime.now() - t0}")
-            print("Pi acceptance ratio:", 100 * accept_pi / jj)
-            print("I acceptance ratio:", 100 * accept_i / jj)
-            print("Eta acceptance ratio:", 100 * accept_eta / jj)
-            print("Background acceptance ratio:", 100 * accept_bg / jj)
+            print_acceptance_ratio(accept_pi, accept_i, accept_eta, accept_bg, jj)
             if jj < (numerator + 1):
                 print(
                     f"Eta: {np.sort(1 / eta[0])}\n Background: {np.mean(pi_bg[0])} \n"
@@ -161,9 +158,13 @@ def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
                 0,
             )  # sample_bg(pi_bg[jj-numerator-1,:], photon_int[jj-numerator-1, :, :], eta[jj-numerator-1,:], tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num, accept_bg)
 
+    print_acceptance_ratio(accept_pi, accept_i, accept_eta, accept_bg, n_iter)
+
+    return pi, photon_int, eta, pi_bg
+
+
+def print_acceptance_ratio(accept_pi, accept_i, accept_eta, accept_bg, n_iter):
     print("Pi acceptance ratio:", 100 * accept_pi / n_iter)
     print("I acceptance ratio:", 100 * accept_i / n_iter)
     print("Eta acceptance ratio:", 100 * accept_eta / n_iter)
-    print("Backgroud acceptance ratio:", 100 * accept_bg / n_iter)
-
-    return pi, photon_int, eta, pi_bg
+    print("Background acceptance ratio:", 100 * accept_bg / n_iter)
