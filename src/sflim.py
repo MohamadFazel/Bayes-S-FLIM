@@ -1,10 +1,12 @@
-import numpy as np
-import cupy as cp
-from ratio import *
-from intensity import *
-from liftim import *
-from background import *
 from datetime import datetime
+
+import cupy as cp
+import numpy as np
+
+from .background import *
+from .intensity import *
+from .liftim import *
+from .ratio import *
 
 
 def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
@@ -31,13 +33,15 @@ def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
     num = cp.arange(numeric)[None, None, None, :]
 
     # Find the maximum length
-    max_len = max(len(x) for x in dt)
+    max_len = max(np.size(np.squeeze(x)) for x in dt)
     dt_padded = np.zeros((len(dt), max_len))
     mask = np.zeros((len(dt), max_len))
 
-    for i, x in enumerate(dt):
-        dt_padded[i, : len(x)] = np.squeeze(x)
+    for i, x_ in enumerate(dt):
+        x = np.squeeze(x_)
+        dt_padded[i, : len(x)] = x
         mask[i, : len(x)] = 1
+    del x, x_
 
     tiled_mask = cp.asarray(np.tile(mask[None:, :, None], (m, 1, 1, numeric)))
     dt_padded = cp.asarray(dt_padded)
@@ -64,6 +68,7 @@ def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
     accept_eta = 0
     accept_bg = 0
     t0 = datetime.now()
+    print("Starting Gibbs sampling...")
     for jj in range(1, n_iter):
         numerator = n_iter - num_itr
         if jj // 10000 == jj / 10000:
@@ -77,14 +82,10 @@ def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
                 print(f"Eta: {np.sort(1/eta[0])}\n Background: {np.mean(pi_bg[0])} \n")
 
             else:
-                print(
-                    f"Eta: {np.sort(1/eta[jj-numerator-1])}\n Background: {np.mean(pi_bg[jj-numerator-1])} \n"
-                )
+                print(f"Eta: {np.sort(1/eta[jj-numerator-1])}\n Background: {np.mean(pi_bg[jj-numerator-1])} \n")
 
         if jj < (numerator + 1):
-            pi[0, :, :], accept_pi = sample_photon_probability(
-                lambda_, pi[0, :, :], photon_int[0, :, :], accept_pi
-            )
+            pi[0, :, :], accept_pi = sample_photon_probability(lambda_, pi[0, :, :], photon_int[0, :, :], accept_pi)
             photon_int[0, :, :], accept_i = sample_int(
                 lambda_,
                 pi[0, :, :],
