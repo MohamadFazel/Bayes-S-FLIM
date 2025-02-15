@@ -28,7 +28,7 @@ def gen_data(n_pix, n_pulse, t_inter_p, lifetimes, spec_ind, exc_probs, tau_irf,
     n_spec = lifetimes.size
     mu = np.array(
         [
-            # [620, 635],
+            [620, 635],
             # [555, 537],
             [410, 435],
             # [655, 640],

@@ -17,7 +17,7 @@ from src.sflim import run_sflim_sampler
 ########## Params #######
 #########################
 # File paths you want to analyze
-file_path = "sample_data/sample.mat"
+file_path = "sample_data/sample_1739624166.6487927.mat"
 file_path = os.path.abspath(file_path)
 
 # The path you want to save results
@@ -43,7 +43,7 @@ n_iter = 100000
 img_size = (32, 32)
 
 # Choose image piece you want to analyze
-slice_params = slice(0, 32, None), slice(0, 32, None)
+# slice_params = slice(0, 32, None), slice(0, 32, None)
 
 file_name = os.path.basename(file_path)
 name_without_extension = os.path.splitext(file_name)
@@ -52,7 +52,7 @@ show_images_first = False
 # ______________________________________________________________________________________________________________________
 data = sio.loadmat(file_path)
 dt_ = np.squeeze(data["Dt"]).reshape(*img_size)
-dt_ = dt_[slice_params]
+# dt_ = dt_[slice_params]
 dummy_size = dt_.shape[1]
 dt = dt_.reshape(-1)
 del dt_
@@ -66,7 +66,7 @@ if show_images_first:
 
 lambda_ = data["Lambda"]
 lambda_ = lambda_.reshape(-1, img_size[1], lambda_.shape[1])
-lambda_ = lambda_[slice_params]
+# lambda_ = lambda_[slice_params]
 lambda_ = lambda_.reshape(-1, lambda_.shape[2])
 
 t0 = datetime.now()

@@ -3,8 +3,7 @@ Spectral-FLIM is a Python-based Bayesian tool designed to handle the intricacies
 It is built using CuPy and CUDA for accelerated performance on NVIDIA GPUs.
 
 ## Requirements
-NVIDIA GPU: Minimum recommendation: RTX 3060 or equivalent.
-Software: Download the application archive application.zip
+NVIDIA GPU: Minimum recommendation: RTX 3070 or equivalent.
 
 ## Usage
 Download and Unzip: Download application.zip and unzip it to a convenient location.

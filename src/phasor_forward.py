@@ -37,11 +37,12 @@ with open(
 
 # np.save("dt_.npy", dt)
 # np.save("lambda_", lambda_)
-
+print(len(dt))
 sio.savemat(
-    "dataforphasor/data_5k.mat",
+    "data_3k.mat",
     {"Dt": dt, "Lambda": lambda_},
 )
+exit()
 spectral_pix_dt = []
 print(len(spectral_dt))
 for spec_dt in spectral_dt:

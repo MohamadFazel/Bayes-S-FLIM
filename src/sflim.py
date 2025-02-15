@@ -39,8 +39,10 @@ def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
 
     for i, x_ in enumerate(dt):
         x = np.squeeze(x_)
-        dt_padded[i, : len(x)] = x
-        mask[i, : len(x)] = 1
+        size1 = np.size(x)
+        if size1 > 0:
+            dt_padded[i, :size1] = x
+            mask[i, :size1] = 1
     del x, x_
 
     tiled_mask = cp.asarray(np.tile(mask[None:, :, None], (m, 1, 1, numeric)))
