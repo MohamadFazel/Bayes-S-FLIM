@@ -5,10 +5,10 @@ import scipy.io as sio
 from forward import gen_data
 
 # _______________________________________________________________________________-
-n_pix = 16
-n_pulse = 5 * 1e5
+n_pix = 10
+n_pulse = 0.5 * 1e4
 t_inter_p = 12.8
-lifetimes = np.array([1.6, 3.5, 5])
+lifetimes = np.array([0.5, 2.5, 4.5])
 spec_ind = np.array([1, 2, 3])
 exc_probs = np.random.rand(10, 3)
 tau_irf = 12.8
@@ -28,7 +28,9 @@ dt, lambda_, s, mu, sigma, spectral_dt = gen_data(
     0,
 )
 
-with open("/home/reza/software/Spectral-FLIM/phasor/data/paramsAy.txt", "w") as file:
+with open(
+    "/media/reza/6ef102d2-1499-441c-853f-c29aa6cb40ac/reza/reza/Spectral-FLIM/phasor/data/params.txt", "w"
+) as file:
     file.write(
         f"n_pix = {n_pix},\n n_pulse = {n_pulse},\n t_inter_p = {t_inter_p},\n lifetimes = {lifetimes},\n tau_irf = {tau_irf},\n sig_irf = {sig_irf},\n mu = {mu},\n sigma = {sigma}"
     )
@@ -37,10 +39,9 @@ with open("/home/reza/software/Spectral-FLIM/phasor/data/paramsAy.txt", "w") as 
 # np.save("lambda_", lambda_)
 
 sio.savemat(
-    "/home/reza/software/Spectral-FLIM/phasor/data/data_ay.mat",
+    "dataforphasor/data_5k.mat",
     {"Dt": dt, "Lambda": lambda_},
 )
-exit()
 spectral_pix_dt = []
 print(len(spectral_dt))
 for spec_dt in spectral_dt:
@@ -53,10 +54,10 @@ for spec_dt in spectral_dt:
         spectral_channels[it].append(x[i])
     spectral_pix_dt.append(spectral_channels)
 sio.savemat(
-    "/home/reza/software/Spectral-FLIM/phasor/data/arrival_time_in_spectral_channels.mat",
+    "dataforphasor/arrival_time_in_spectral_channels_5k.mat",
     {"spectral_channels": spectral_pix_dt},
 )
-exit()
+# exit()
 # Define the number of bins and the range
 num_bins = 255
 range_bins = (0, t_inter_p)
@@ -76,8 +77,8 @@ data_to_save = {
     "combined_histogram": combined_histogram,
     "bin_edges": combined_bin_edges,  # assuming all histograms share the same bin edges
 }
-
-sio.savemat("/home/reza/software/Spectral-FLIM/phasor/data/histograms.mat", data_to_save)
+print(np.sum(histograms))
+sio.savemat("dataforphasor/histograms_5k.mat", data_to_save)
 
 # Plot the combined histogram
 # plt.figure()

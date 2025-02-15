@@ -1,13 +1,10 @@
-from datetime import datetime
-
-import cupy as cp
 import numpy as np
-
-# from .background import sample_bg
-from .intensity import sample_int
-from .liftim import sample_lifetime
-from .ratio import sample_photon_probability
-from tqdm import tqdm
+import cupy as cp
+from ratio import *
+from intensity import *
+from liftim import *
+from background import *
+from datetime import datetime
 
 
 def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
@@ -31,7 +28,7 @@ def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
     npix = np.shape(lambda_)[0]
     numeric = 4
     num_itr = 50000  # Number of iterations keeping the chain
-    num = cp.arange(numeric)[None, None, None, :].astype(cp.float32)
+    num = cp.arange(numeric)[None, None, None, :]
 
     # Find the maximum length
     max_len = max(len(x) for x in dt)
@@ -67,20 +64,21 @@ def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
     accept_eta = 0
     accept_bg = 0
     t0 = datetime.now()
-    for jj in tqdm(range(1, n_iter)):
+    for jj in range(1, n_iter):
         numerator = n_iter - num_itr
-        if jj % 10000 == 0:
+        if jj // 10000 == jj / 10000:
             print("Iteration:", jj)
-            print(f"Time interval: {datetime.now() - t0}")
-            print_acceptance_ratio(accept_pi, accept_i, accept_eta, accept_bg, jj)
+            print(f"Time interval: {datetime.now()-t0}")
+            print("Pi acceptance ratio:", 100 * accept_pi / jj)
+            print("I acceptance ratio:", 100 * accept_i / jj)
+            print("Eta acceptance ratio:", 100 * accept_eta / jj)
+            print("Background acceptance ratio:", 100 * accept_bg / jj)
             if jj < (numerator + 1):
-                print(
-                    f"Eta: {np.sort(1 / eta[0])}\n Background: {np.mean(pi_bg[0])} \n"
-                )
+                print(f"Eta: {np.sort(1/eta[0])}\n Background: {np.mean(pi_bg[0])} \n")
 
             else:
                 print(
-                    f"Eta: {np.sort(1 / eta[jj - numerator - 1])}\n Background: {np.mean(pi_bg[jj - numerator - 1])} \n"
+                    f"Eta: {np.sort(1/eta[jj-numerator-1])}\n Background: {np.mean(pi_bg[jj-numerator-1])} \n"
                 )
 
         if jj < (numerator + 1):
@@ -158,13 +156,9 @@ def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
                 0,
             )  # sample_bg(pi_bg[jj-numerator-1,:], photon_int[jj-numerator-1, :, :], eta[jj-numerator-1,:], tau_irf,  sig_irf, dt_padded, tiled_mask, t_inter_p, num, accept_bg)
 
-    print_acceptance_ratio(accept_pi, accept_i, accept_eta, accept_bg, n_iter)
-
-    return pi, photon_int, eta, pi_bg
-
-
-def print_acceptance_ratio(accept_pi, accept_i, accept_eta, accept_bg, n_iter):
     print("Pi acceptance ratio:", 100 * accept_pi / n_iter)
     print("I acceptance ratio:", 100 * accept_i / n_iter)
     print("Eta acceptance ratio:", 100 * accept_eta / n_iter)
-    print("Background acceptance ratio:", 100 * accept_bg / n_iter)
+    print("Backgroud acceptance ratio:", 100 * accept_bg / n_iter)
+
+    return pi, photon_int, eta, pi_bg

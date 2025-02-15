@@ -2,16 +2,9 @@
 *.log
 
 *.ipynb_checkpoints
-
-modules/__pycache__/
-phasor/.vscode
 src/__pycache__
 
 *.npy
-Spectral-FLIM_Data
-*.png
-*.jpg
-*.jpeg
 *.pt
 *.pth
 .vscode
