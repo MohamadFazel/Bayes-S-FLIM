@@ -1,26 +1,26 @@
 import pickle
 import sys
+from datetime import datetime
+
+import cupy as cp
+import matplotlib.pyplot as plt
+import numpy as np
 import PyQt6.QtWidgets as qt
+import scipy.stats as sc
+from matplotlib import cm
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.figure import Figure
 from PyQt6 import uic
 from PyQt6.QtCore import pyqtSignal
-import numpy as np
-import cupy as cp
-from datetime import datetime
-from matplotlib import cm
 
 # from cupyx.scipy import special
 from scipy import special
-import scipy.stats as sc
 from scipy.io import loadmat, savemat
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.figure import Figure
+
 
 class PlotWindow(qt.QWidget):
 
-    def __init__(
-        self, eta, photon_int, pi, select_plot, nsb, img_sz, check_box, parent=None
-    ):
+    def __init__(self, eta, photon_int, pi, select_plot, nsb, img_sz, check_box, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Plot Results")
         self.setMinimumSize(600, 400)
@@ -77,9 +77,7 @@ class PlotWindow(qt.QWidget):
             x = np.linspace(375, 760, self.nsb)
             for ii in range(pin.shape[0]):
                 color = self.colors[ii % len(self.colors)]
-                ax.plot(
-                    x, pin[ii] / np.sum(pin[ii]), color=color, label=f"Species #{ii+1}"
-                )
+                ax.plot(x, pin[ii] / np.sum(pin[ii]), color=color, label=f"Species #{ii+1}")
             ax.set_title(f"Species Spectra")
             ax.set_xlabel("Wavelength (nm)")
             ax.set_ylabel("Distribution")
@@ -227,9 +225,7 @@ class MainWindow(qt.QMainWindow):
         file_dialog = qt.QFileDialog(self)
         file_dialog.setOptions(options)
         filters = "MAT Files (*.mat);;JSON Files (*.json)"
-        file_name, _ = file_dialog.getOpenFileName(
-            self, "Open File", "", filters, options=options
-        )
+        file_name, _ = file_dialog.getOpenFileName(self, "Open File", "", filters, options=options)
         if file_name:
             if file_name.endswith(".mat"):
                 file_data = loadmat(file_name)
@@ -262,9 +258,7 @@ class MainWindow(qt.QMainWindow):
         for mm in range(self.num_species):
             self.pi[0, mm, :] /= np.sum(self.pi[0, mm, :])
         for ii in range(self.n_pix):
-            self.photon_int[0, 0 : self.num_species, ii] = np.random.gamma(
-                1, 1500, size=self.num_species
-            )
+            self.photon_int[0, 0 : self.num_species, ii] = np.random.gamma(1, 1500, size=self.num_species)
 
     def sample_int(self, it_, numerator):
         if it_ < (numerator + 1):
@@ -278,12 +272,8 @@ class MainWindow(qt.QMainWindow):
 
         i_new = i_old.copy()
         i_new[:, :] = np.random.gamma(self.alpha_prop_int, i_old / self.alpha_prop_int)
-        lf_top = self.calculate_lifetime_likelihood_gpu_int(
-            cp.asarray(i_new), cp.asarray(eta)
-        )
-        lf_bot = self.calculate_lifetime_likelihood_gpu_int(
-            cp.asarray(i_old), cp.asarray(eta)
-        )
+        lf_top = self.calculate_lifetime_likelihood_gpu_int(cp.asarray(i_new), cp.asarray(eta))
+        lf_bot = self.calculate_lifetime_likelihood_gpu_int(cp.asarray(i_old), cp.asarray(eta))
 
         tmp_top = np.sum((i_new[:, :, None] * pi[:, None, :]), axis=0)
         a_top = np.sum(sc.poisson.logpmf(self.lambda_, tmp_top), axis=1)
@@ -296,14 +286,10 @@ class MainWindow(qt.QMainWindow):
         a_bottom[np.abs(a_bottom) == np.inf] = 0
 
         a_prior = np.sum(
-            sc.gamma.logpdf(
-                i_new[:, :], self.alpha_prior_int, scale=self.beta_prior_int
-            ),
+            sc.gamma.logpdf(i_new[:, :], self.alpha_prior_int, scale=self.beta_prior_int),
             axis=0,
         ) - np.sum(
-            sc.gamma.logpdf(
-                i_old[:, :], self.alpha_prior_int, scale=self.beta_prior_int
-            ),
+            sc.gamma.logpdf(i_old[:, :], self.alpha_prior_int, scale=self.beta_prior_int),
             axis=0,
         )
         a_prop = np.sum(
@@ -347,9 +333,7 @@ class MainWindow(qt.QMainWindow):
 
         m = np.random.choice(n_species)
 
-        pi_new[m, :] = np.random.gamma(
-            self.alpha_prop_pi, pi_old[m, :] / self.alpha_prop_pi
-        )
+        pi_new[m, :] = np.random.gamma(self.alpha_prop_pi, pi_old[m, :] / self.alpha_prop_pi)
         pi_new[m] /= np.sum(pi_new[m])
         tmp_top = (photon_int[:, :, None] * pi_new[:, None, :]).sum(axis=0)
         tmp_t = tmp_top[tmp_top > 0.001]
@@ -365,12 +349,12 @@ class MainWindow(qt.QMainWindow):
         a_prop = 0
         a_prior = 0
         for mm in range(pi_old.shape[0]):
-            a_prop += np.sum(
-                sc.dirichlet.logpdf(pi_old[mm, :], pi_new[mm, :])
-            ) - np.sum(sc.dirichlet.logpdf(pi_new[mm, :], pi_old[mm, :]))
-            a_prior += np.sum(
-                sc.dirichlet.logpdf(pi_new[mm, :], alpha / n_channel)
-            ) - np.sum(sc.dirichlet.logpdf(pi_old[mm, :], alpha / n_channel))
+            a_prop += np.sum(sc.dirichlet.logpdf(pi_old[mm, :], pi_new[mm, :])) - np.sum(
+                sc.dirichlet.logpdf(pi_new[mm, :], pi_old[mm, :])
+            )
+            a_prior += np.sum(sc.dirichlet.logpdf(pi_new[mm, :], alpha / n_channel)) - np.sum(
+                sc.dirichlet.logpdf(pi_old[mm, :], alpha / n_channel)
+            )
 
         a = (a_top - a_bottom) + a_prop + a_prior
         if a > np.log(np.random.rand()):
@@ -390,32 +374,18 @@ class MainWindow(qt.QMainWindow):
             photon_int = self.photon_int[it_ - numerator, :, :].copy()
             eta_old = self.eta[it_ - numerator - 1, :].copy()
 
-        eta_prop = np.random.gamma(
-            self.alpha_prior_life, eta_old / self.alpha_prior_life
-        )
+        eta_prop = np.random.gamma(self.alpha_prior_life, eta_old / self.alpha_prior_life)
 
-        lf_top = self.calculate_lifetime_likelihood_gpu(
-            cp.asarray(photon_int), cp.asarray(eta_prop)
-        )
-        lf_bot = self.calculate_lifetime_likelihood_gpu(
-            cp.asarray(photon_int), cp.asarray(eta_old)
-        )
+        lf_top = self.calculate_lifetime_likelihood_gpu(cp.asarray(photon_int), cp.asarray(eta_prop))
+        lf_bot = self.calculate_lifetime_likelihood_gpu(cp.asarray(photon_int), cp.asarray(eta_old))
         lik_ratio = lf_top - lf_bot
 
-        a_prior = np.sum(
-            sc.gamma.logpdf(eta_prop, self.alpha_prior_life, scale=self.beta_prior_life)
-        ) - np.sum(
+        a_prior = np.sum(sc.gamma.logpdf(eta_prop, self.alpha_prior_life, scale=self.beta_prior_life)) - np.sum(
             sc.gamma.logpdf(eta_old, self.alpha_prior_life, scale=self.beta_prior_life)
         )
         a_prop = np.sum(
-            sc.gamma.logpdf(
-                eta_old, self.alpha_prior_life, scale=(eta_prop / self.alpha_prior_life)
-            )
-        ) - np.sum(
-            sc.gamma.logpdf(
-                eta_prop, self.alpha_prior_life, scale=(eta_old / self.alpha_prior_life)
-            )
-        )
+            sc.gamma.logpdf(eta_old, self.alpha_prior_life, scale=(eta_prop / self.alpha_prior_life))
+        ) - np.sum(sc.gamma.logpdf(eta_prop, self.alpha_prior_life, scale=(eta_old / self.alpha_prior_life)))
 
         acc_ratio = lik_ratio + a_prop + a_prior
         if acc_ratio > np.log(np.random.rand()):
@@ -432,12 +402,7 @@ class MainWindow(qt.QMainWindow):
             * cp.exp(
                 (eta_[:, None, None, None] / 2)
                 * (
-                    2
-                    * (
-                        self.tau_irf
-                        - self.dt_padded[None, :, :, None]
-                        - self.num * self.t_inter_p
-                    )
+                    2 * (self.tau_irf - self.dt_padded[None, :, :, None] - self.num * self.t_inter_p)
                     + eta_[:, None, None, None] * self.sig_irf**2
                 )
             )
@@ -464,12 +429,7 @@ class MainWindow(qt.QMainWindow):
             * cp.exp(
                 (eta_[:, None, None, None] / 2)
                 * (
-                    2
-                    * (
-                        self.tau_irf
-                        - self.dt_padded[None, :, :, None]
-                        - self.num * self.t_inter_p
-                    )
+                    2 * (self.tau_irf - self.dt_padded[None, :, :, None] - self.num * self.t_inter_p)
                     + eta_[:, None, None, None] * self.sig_irf**2
                 )
             )
@@ -491,9 +451,7 @@ class MainWindow(qt.QMainWindow):
 
     def runAnalysis(self):
         if self.dt_ is None or self.lambda_ is None:
-            qt.QMessageBox.critical(
-                self, "Error", "Please upload data before running the analysis."
-            )
+            qt.QMessageBox.critical(self, "Error", "Please upload data before running the analysis.")
         else:
             self.ui.run_.setEnabled(False)
             try:
@@ -507,12 +465,12 @@ class MainWindow(qt.QMainWindow):
                 mask_ = np.zeros((len(self.dt_), max_len))
                 for i, x_ in enumerate(self.dt_):
                     x = np.squeeze(x_)
-                    self.dt_padded[i, : len(x)] = x
-                    mask_[i, : len(x)] = 1
+                    sizex = np.size(x)
+                    if sizex > 0:
+                        self.dt_padded[i, :sizex] = x
+                        mask_[i, :sizex] = 1
                 del x, x_
-                self.tiled_mask = cp.asarray(
-                    np.tile(mask_[None:, :, None], (self.num_species, 1, 1, numeric))
-                )
+                self.tiled_mask = cp.asarray(np.tile(mask_[None:, :, None], (self.num_species, 1, 1, numeric)))
                 self.dt_padded = cp.asarray(self.dt_padded)
                 # Sampling the parameters
                 self.accept_i = 0
@@ -535,9 +493,7 @@ class MainWindow(qt.QMainWindow):
                 self.progressBar.setValue(percentage)
                 qt.QApplication.processEvents()
 
-                qt.QMessageBox.information(
-                    self, "Analysis Complete", "The analysis has finished successfully!"
-                )
+                qt.QMessageBox.information(self, "Analysis Complete", "The analysis has finished successfully!")
                 # self.reset_values()
                 self.ui.plot_.setEnabled(True)
                 self.ui.save_results.setEnabled(True)
@@ -593,9 +549,7 @@ class MainWindow(qt.QMainWindow):
         file_dialog = qt.QFileDialog(self)
         file_dialog.setOptions(options)
         filters = "PNG Files (*.png);"
-        file_name, _ = file_dialog.getSaveFileName(
-            self, "Save Plot", "", filters, options=options
-        )
+        file_name, _ = file_dialog.getSaveFileName(self, "Save Plot", "", filters, options=options)
         colors = [
             "red",
             "blue",
@@ -677,9 +631,7 @@ class MainWindow(qt.QMainWindow):
                     ax.imshow.imshow(phi[ii], cmap=cmap)
                     ax.set_title(f"Species #{ii + 1}")
                     ax.axis("off")
-                    plt.savefig(
-                        file_name + f"_#{ii+1}", bbox_inches="tight", pad_inches=0
-                    )
+                    plt.savefig(file_name + f"_#{ii+1}", bbox_inches="tight", pad_inches=0)
 
             qt.QMessageBox.information(self, "Success", "Plot saved successfully.")
 
@@ -703,17 +655,13 @@ class MainWindow(qt.QMainWindow):
     def save_as_mat(self, file_name):
         data = {"eta": self.eta, "pi": self.pi, "photon_int": self.photon_int}
         savemat(file_name, data)
-        qt.QMessageBox.information(
-            self, "Success", "Results saved successfully as .mat file."
-        )
+        qt.QMessageBox.information(self, "Success", "Results saved successfully as .mat file.")
 
     def save_as_dict(self, file_name):
         data = {"eta": self.eta, "pi": self.pi, "photon_int": self.photon_int}
         with open(file_name, "wb") as f:
             pickle.dump(data, f)
-        qt.QMessageBox.information(
-            self, "Success", "Results saved successfully as .pkl file."
-        )
+        qt.QMessageBox.information(self, "Success", "Results saved successfully as .pkl file.")
 
 
 app = qt.QApplication(sys.argv)
