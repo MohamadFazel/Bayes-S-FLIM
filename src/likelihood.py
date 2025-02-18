@@ -9,11 +9,8 @@ def calculate_lifetime_likelihood_gpu(photon_int, eta, pi_bg, tau_irf, sig_irf, 
     photon_int = photon_int.astype(cp.float32)
     eta = eta.astype(cp.float32)
     pi_bg = pi_bg.astype(cp.float32)
-    tau_irf = tau_irf.astype(cp.float32)
-    sig_irf = sig_irf.astype(cp.float32)
     dt_padded = dt_padded.astype(cp.float32)
     mask = mask.astype(cp.float32)
-    t_inter_p = t_inter_p.astype(cp.float32)
 
     # Reshape to prevent redundant broadcasting
     eta = eta[:, None, None, None]
@@ -57,11 +54,8 @@ def calculate_lifetime_likelihood_gpu_int(photon_int, eta, pi_bg, tau_irf, sig_i
     photon_int = photon_int.astype(cp.float32)
     eta = eta.astype(cp.float32)
     pi_bg = pi_bg.astype(cp.float32)
-    tau_irf = tau_irf.astype(cp.float32)
-    sig_irf = sig_irf.astype(cp.float32)
     dt_padded = dt_padded.astype(cp.float32)
     mask = mask.astype(cp.float32)
-    t_inter_p = t_inter_p.astype(cp.float32)
 
     # Compute the core likelihood function
     exponent = cp.multiply(
