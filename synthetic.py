@@ -43,43 +43,43 @@ for it in range(excitation_probs.shape[0]):
     if np.abs(img4[it]) > 0:
         excitation_probs[it, 3] = img4[it] * 0.00003  # np.random.randint(6,10)*0.0009
 
-save_dir = ""
-
+save_dir = "results"
+os.makedirs(save_dir, exist_ok=True)
 img = excitation_probs[:, 0].reshape(-1, b)
 print(img.max())
 plt.imshow(img, cmap="Blues")
-plt.savefig("results/img1.png")
+plt.savefig(f"{save_dir}/img1.png")
 plt.show()
-np.save("results/img1.npy", img)
+np.save(f"{save_dir}/img1.npy", img)
 
 img = excitation_probs[:, 1].reshape(-1, b)
 print(img.max())
 plt.imshow(img, cmap="Greens")
-plt.savefig("results/img2.png")
+plt.savefig(f"{save_dir}/img2.png")
 plt.show()
-np.save("results/img2.npy", img)
+np.save(f"{save_dir}/img2.npy", img)
 
 img = excitation_probs[:, 2].reshape(-1, b)
 print(img.max())
 plt.imshow(img, cmap="Oranges")
-plt.savefig("results/img3.png")
+plt.savefig(f"{save_dir}/img3.png")
 plt.show()
-np.save("results/img3.npy", img)
+np.save(f"{save_dir}/img3.npy", img)
 
 img = excitation_probs[:, 3].reshape(-1, b)
 print(img.max())
 plt.imshow(img, cmap="Purples")
-plt.savefig("results/img4.png")
+plt.savefig(f"{save_dir}/img4.png")
 plt.show()
-np.save("results/img4.npy", img)
+np.save(f"{save_dir}/img4.npy", img)
 
 
 img = np.sum(excitation_probs[:, :], axis=1).reshape(-1, b)
 print(img.max())
 plt.imshow(img, cmap="gray")
-plt.savefig("results/img.png")
+plt.savefig(f"{save_dir}/img.png")
 plt.show()
-np.save("results/img.npy", img)
+np.save(f"{save_dir}/img.npy", img)
 
 # Set parameters for data generation
 

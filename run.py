@@ -22,6 +22,7 @@ file_path = os.path.abspath(file_path)
 
 # The path you want to save results
 save_path = "results"
+os.makedirs(save_path, exist_ok=True)
 save_path = os.path.abspath(save_path)
 
 # Inrepulse time
