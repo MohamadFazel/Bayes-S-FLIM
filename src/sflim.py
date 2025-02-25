@@ -1,4 +1,5 @@
 from datetime import datetime
+from tqdm import trange
 
 import cupy as cp
 import numpy as np
@@ -29,7 +30,7 @@ def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
     nsb = 32
     npix = np.shape(lambda_)[0]
     numeric = 4
-    if n_iter > 99000:
+    if n_iter > 50000:
         num_itr = 50000  # Number of iterations keeping the chain
     else:
         num_itr = n_iter // 2
@@ -74,7 +75,7 @@ def run_sflim_sampler(dt, lambda_, tau_irf, sig_irf, t_inter_p, n_iter, m):
     accept_bg = 0
     t0 = datetime.now()
     print("Starting Gibbs sampling...")
-    for jj in range(1, n_iter):
+    for jj in trange(1, n_iter):
         numerator = n_iter - num_itr
         if jj // 10000 == jj / 10000:
             print("Iteration:", jj)
