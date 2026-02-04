@@ -9,6 +9,3 @@ NVIDIA GPU: Minimum recommendation: RTX 3070 or equivalent.
 Download and Unzip: Download application.zip and unzip it to a convenient location.
 Run the Application: use the terminal or just click on app.bin.
 Select Data: Within the application interface, select the data files you want to analyze. You can use the provided sample data located in the data folder within the unzipped directory.
-## Contributing
-
-## License
