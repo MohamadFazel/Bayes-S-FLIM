@@ -1,5 +1,5 @@
 # Bayes-S-FLIM
-Spectral-FLIM is a Python-based Bayesian tool designed to handle the intricacies of Spectral Fluorescence Lifetime Imaging Microscopy (FLIM), providing advanced capabilities for spectral analysis in fluorescence microscopy.
+Bayes-S-FLIM is a Python-based Bayesian tool designed to handle the intricacies of Spectral Fluorescence Lifetime Imaging Microscopy (FLIM), providing advanced capabilities for spectral analysis in fluorescence microscopy.
 It is built using CuPy and CUDA for accelerated performance on NVIDIA GPUs.
 
 ## Requirements
